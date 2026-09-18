@@ -6,7 +6,7 @@ export class GatewayController {
   constructor(private readonly gatewayService: GatewayService) {}
 
   @Get()
-  getHello(): string {
+  async getHello() {
     return this.gatewayService.getHello();
   }
 }
