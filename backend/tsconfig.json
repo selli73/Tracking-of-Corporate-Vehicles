@@ -27,6 +27,9 @@
   "references": [
     {
       "path": "./apps/gateway/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/fleet/tsconfig.app.json"
     }
   ]
 }

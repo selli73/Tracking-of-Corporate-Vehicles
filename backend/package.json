@@ -13,7 +13,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/apps/gateway/main",
+    "start:prod": "node dist/apps/tracking-vehicles/main",
     "lint": "oxlint src/ test/",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,7 +22,9 @@
     "test:e2e": "jest --config ./apps/tracking-vehicles/test/jest-e2e.json",
     "contract:emit": "prisma contract emit",
     "gateway:db:emit": "prisma contract emit --config apps/gateway/prisma.config.ts",
-    "gateway:db:init": "prisma db init --config apps/gateway/prisma.config.ts"
+    "gateway:db:init": "prisma db init --config apps/gateway/prisma.config.ts",
+    "fleet:db:emit": "prisma contract emit --config apps/fleet/prisma.config.ts",
+    "fleet:db:init": "prisma db init --config apps/fleet/prisma.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",
@@ -31,7 +33,7 @@
     "@nestjs/platform-express": "^12.0.1",
     "@prisma/orm-postgres": "^8.0.0-rc.11",
     "@rspack/core": "^2.2.6",
-    "dotenv": "^18.0.0",
+    "dotenv": "^18.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "tsconfig-paths-webpack-plugin": "^4.2.0",

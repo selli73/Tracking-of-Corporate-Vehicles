@@ -10,6 +10,15 @@
   "monorepo": true,
   "root": "apps/gateway",
   "projects": {
+    "fleet": {
+      "type": "application",
+      "root": "apps/fleet",
+      "entryFile": "main",
+      "sourceRoot": "apps/fleet/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/fleet/tsconfig.app.json"
+      }
+    },
     "gateway": {
       "type": "application",
       "root": "apps/gateway",
