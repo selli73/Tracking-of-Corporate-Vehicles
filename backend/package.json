@@ -24,7 +24,15 @@
     "gateway:db:emit": "prisma contract emit --config apps/gateway/prisma.config.ts",
     "gateway:db:init": "prisma db init --config apps/gateway/prisma.config.ts",
     "fleet:db:emit": "prisma contract emit --config apps/fleet/prisma.config.ts",
-    "fleet:db:init": "prisma db init --config apps/fleet/prisma.config.ts"
+    "fleet:db:init": "prisma db init --config apps/fleet/prisma.config.ts",
+    "booking:db:emit": "prisma contract emit --config apps/booking/prisma.config.ts",
+    "booking:db:init": "prisma db init --config apps/booking/prisma.config.ts",
+    "telemetry:db:emit": "prisma contract emit --config apps/telemetry/prisma.config.ts",
+    "telemetry:db:init": "prisma db init --config apps/telemetry/prisma.config.ts",
+    "billing:db:emit": "prisma contract emit --config apps/billing/prisma.config.ts",
+    "billing:db:init": "prisma db init --config apps/billing/prisma.config.ts",
+    "notification:db:emit": "prisma contract emit --config apps/notification/prisma.config.ts",
+    "notification:db:init": "prisma db init --config apps/notification/prisma.config.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

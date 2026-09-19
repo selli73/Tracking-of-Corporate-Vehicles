@@ -10,6 +10,24 @@
   "monorepo": true,
   "root": "apps/gateway",
   "projects": {
+    "billing": {
+      "type": "application",
+      "root": "apps/billing",
+      "entryFile": "main",
+      "sourceRoot": "apps/billing/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/billing/tsconfig.app.json"
+      }
+    },
+    "booking": {
+      "type": "application",
+      "root": "apps/booking",
+      "entryFile": "main",
+      "sourceRoot": "apps/booking/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/booking/tsconfig.app.json"
+      }
+    },
     "fleet": {
       "type": "application",
       "root": "apps/fleet",
@@ -26,6 +44,24 @@
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
+      }
+    },
+    "notification": {
+      "type": "application",
+      "root": "apps/notification",
+      "entryFile": "main",
+      "sourceRoot": "apps/notification/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notification/tsconfig.app.json"
+      }
+    },
+    "telemetry": {
+      "type": "application",
+      "root": "apps/telemetry",
+      "entryFile": "main",
+      "sourceRoot": "apps/telemetry/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/telemetry/tsconfig.app.json"
       }
     }
   }

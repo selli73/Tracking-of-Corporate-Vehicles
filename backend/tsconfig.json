@@ -30,6 +30,21 @@
     },
     {
       "path": "./apps/fleet/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/tracking-vehicles/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/booking/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/telemetry/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/billing/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/notification/tsconfig.app.json"
     }
   ]
 }
