@@ -32,9 +32,6 @@
       "path": "./apps/fleet/tsconfig.app.json"
     },
     {
-      "path": "./apps/tracking-vehicles/tsconfig.app.json"
-    },
-    {
       "path": "./apps/booking/tsconfig.app.json"
     },
     {
