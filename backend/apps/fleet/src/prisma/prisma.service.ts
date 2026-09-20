@@ -11,7 +11,7 @@ export class PrismaService implements OnModuleDestroy {
   constructor(private readonly config: ConfigService) {
     this.db = postgres<Contract>({
       contractJson,
-      url: this.config.getOrThrow<string>('GATEWAY_DATABASE_URL'),
+      url: this.config.getOrThrow<string>('FLEET_DATABASE_URL'),
     });
   }
 

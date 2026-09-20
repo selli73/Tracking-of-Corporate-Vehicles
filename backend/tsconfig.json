@@ -21,7 +21,15 @@
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@app/contracts": [
+        "./libs/contracts/src/index.ts"
+      ],
+      "@app/contracts/*": [
+        "./libs/contracts/src/*"
+      ]
+    }
   },
   "files": [],
   "references": [

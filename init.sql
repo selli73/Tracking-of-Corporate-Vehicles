@@ -1,4 +1,3 @@
-CREATE DATABASE gateway_db;
 CREATE DATABASE fleet_db;
 CREATE DATABASE booking_db;
 CREATE DATABASE telemetry_db;

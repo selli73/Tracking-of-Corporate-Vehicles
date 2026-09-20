@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
-import { FleetService } from './fleet.service.js';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
+import { FLEET_PATTERNS } from '@app/contracts/fleet.patterns.js';
 
 @Controller()
 export class FleetController {
-  constructor(private readonly fleetService: FleetService) {}
-
-  @Get()
-  async getHello() {
-    return this.fleetService.getHello(); 
+  constructor() {}
+  
+  @MessagePattern(FLEET_PATTERNS.PING)
+  async ping() {
+    return { service: 'fleet', status: 'ok' };
   }
 }

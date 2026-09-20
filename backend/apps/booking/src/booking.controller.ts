@@ -1,12 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { BookingService } from './booking.service.js';
+import { MessagePattern } from '@nestjs/microservices';
+import { BOOKING_PATTERNS } from '@app/contracts/booking.patterns';
 
 @Controller()
 export class BookingController {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor() {}
 
-  @Get()
-  getHello() {
-    return this.bookingService.getHello();
+  @MessagePattern(BOOKING_PATTERNS.PING)
+  async ping() {
+    return { service: 'booking', status: 'ok' };
   }
 }
