@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5ea1da525cb9a197437805a0dd802ce105d141f287e0a8b49d812b48b37b88b1'>;
+  StorageHashBase<'4c36cde71a4a058c7afcece12fe98b550c27c0798fdb180b9cdaf6144c5826fb'>;
 export type ExecutionHash =
   ExecutionHashBase<'e3f1a36bdcabb30dbf83f45c2b6a4c921492a627b65363c533c0f0b29e4654cb'>;
 export type ProfileHash =
@@ -251,7 +251,7 @@ export type FieldOutputTypes = {
       readonly actualAddress: CodecTypes['pg/text@1']['output'] | null;
       readonly phone: CodecTypes['pg/text@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
     readonly Post: {
@@ -276,9 +276,9 @@ export type FieldOutputTypes = {
       readonly model: CodecTypes['pg/text@1']['output'];
       readonly vin: CodecTypes['pg/text@1']['output'];
       readonly licensePlate: CodecTypes['pg/text@1']['output'];
-      readonly companyId: CodecTypes['pg/text@1']['output'] | null;
+      readonly companyId: CodecTypes['pg/text@1']['output'];
       readonly status: 'ACTIVE' | 'MAINTENANCE' | 'DECOMMISSIONED';
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
   };
@@ -294,7 +294,7 @@ export type FieldInputTypes = {
       readonly actualAddress: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly Post: {
@@ -319,9 +319,9 @@ export type FieldInputTypes = {
       readonly model: CodecTypes['pg/text@1']['input'];
       readonly vin: CodecTypes['pg/text@1']['input'];
       readonly licensePlate: CodecTypes['pg/text@1']['input'];
-      readonly companyId: CodecTypes['pg/text@1']['input'] | null;
+      readonly companyId: CodecTypes['pg/text@1']['input'];
       readonly status: 'ACTIVE' | 'MAINTENANCE' | 'DECOMMISSIONED';
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
   };
@@ -330,7 +330,7 @@ export type StorageColumnTypes = {
   readonly public: {
     readonly company: {
       readonly actualAddress: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly email: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly officialName: CodecTypes['pg/text@1']['output'];
@@ -358,8 +358,8 @@ export type StorageColumnTypes = {
     };
     readonly vehicle: {
       readonly brand: CodecTypes['pg/text@1']['output'];
-      readonly companyId: CodecTypes['pg/text@1']['output'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+      readonly companyId: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly licensePlate: CodecTypes['pg/text@1']['output'];
       readonly model: CodecTypes['pg/text@1']['output'];
@@ -373,7 +373,7 @@ export type StorageColumnInputTypes = {
   readonly public: {
     readonly company: {
       readonly actualAddress: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly officialName: CodecTypes['pg/text@1']['input'];
@@ -401,8 +401,8 @@ export type StorageColumnInputTypes = {
     };
     readonly vehicle: {
       readonly brand: CodecTypes['pg/text@1']['input'];
-      readonly companyId: CodecTypes['pg/text@1']['input'] | null;
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
+      readonly companyId: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly licensePlate: CodecTypes['pg/text@1']['input'];
       readonly model: CodecTypes['pg/text@1']['input'];
@@ -443,7 +443,7 @@ export namespace Models {
     actualAddress: CodecTypes['pg/text@1']['output'] | null;
     phone: CodecTypes['pg/text@1']['output'];
     email: CodecTypes['pg/text@1']['output'];
-    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     vehicles: public_Vehicle[];
     readonly [RelationKeys]?: 'vehicles';
@@ -454,11 +454,11 @@ export namespace Models {
     model: CodecTypes['pg/text@1']['output'];
     vin: CodecTypes['pg/text@1']['output'];
     licensePlate: CodecTypes['pg/text@1']['output'];
-    companyId: CodecTypes['pg/text@1']['output'] | null;
+    companyId: CodecTypes['pg/text@1']['output'];
     status: 'ACTIVE' | 'MAINTENANCE' | 'DECOMMISSIONED';
-    createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    company: public_Company | null;
+    company: public_Company;
     readonly [RelationKeys]?: 'company';
   };
 }
@@ -534,7 +534,7 @@ type ContractBase = Omit<
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
@@ -688,7 +688,7 @@ type ContractBase = Omit<
                 readonly companyId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
+                  readonly nullable: false;
                 };
                 readonly status: {
                   readonly nativeType: 'text';
@@ -701,7 +701,7 @@ type ContractBase = Omit<
                 };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
@@ -809,7 +809,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
               readonly updatedAt: {
@@ -986,7 +986,7 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly companyId: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly status: {
@@ -997,7 +997,7 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: {
                   readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
               readonly updatedAt: {
@@ -1015,7 +1015,7 @@ type ContractBase = Omit<
                   readonly model: 'Company';
                 };
                 readonly cardinality: 'N:1';
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly on: {
                   readonly localFields: readonly ['companyId'];
                   readonly targetFields: readonly ['id'];

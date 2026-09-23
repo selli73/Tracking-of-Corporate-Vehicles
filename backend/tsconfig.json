@@ -50,6 +50,9 @@
     },
     {
       "path": "./apps/notification/tsconfig.app.json"
+    },
+    {
+      "path": "./libs/contracts/tsconfig.lib.json"
     }
   ]
 }
