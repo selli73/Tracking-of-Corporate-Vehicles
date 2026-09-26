@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVehicleDto } from '@app/contracts';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class VehicleService {
@@ -10,7 +11,7 @@ export class VehicleService {
         const vehicle = await this._prismaService.db.orm.public.Vehicle.where({ vin: data.vin }).first();
         
         if (vehicle) {
-            throw new BadRequestException('A vehicle with this VIN exists')
+            throw new RpcException('A vehicle with this VIN exists')
         }
 
         return this._prismaService.db.orm.public.Vehicle.create({

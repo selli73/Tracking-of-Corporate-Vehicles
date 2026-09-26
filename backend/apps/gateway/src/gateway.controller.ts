@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, timeout } from 'rxjs';
+import { firstValueFrom, lastValueFrom, timeout } from 'rxjs';
 import { BOOKING_SERVICE, BOOKING_PATTERNS } from '@app/contracts/booking.patterns';
 import { TELEMETRY_PATTERNS, TELEMETRY_SERVICE } from '@app/contracts/telemetry.patterns';
 import { BILLING_SERVICE, BILLING_PATTERNS } from '@app/contracts/billing.patterns';
@@ -38,7 +38,7 @@ export class GatewayController {
   
   @Post()
   createVehicleGateway(@Body() data: CreateVehicleDto) {
-    return this._clientFleet.send(FLEET_PATTERNS.CREATE_VEHICLE, data);
+    return this._clientFleet.send(FLEET_PATTERNS.CREATE_VEHICLE, data).pipe(timeout(10000));
   }
 
   @Get('all-vehicle')

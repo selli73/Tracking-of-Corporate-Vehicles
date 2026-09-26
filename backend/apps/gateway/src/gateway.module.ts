@@ -10,6 +10,9 @@ import { TELEMETRY_SERVICE } from '@app/contracts/telemetry.patterns';
 import { BILLING_SERVICE } from '@app/contracts/billing.patterns';
 import { NOTIFICATION_SERVICE } from '@app/contracts/notification.patterns';
 import { AuthModule } from './auth/auth.module.js';
+import { CompanyModule } from './company/company.module.js';
+import { VehiclesController } from './vehicles/vehicles.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -74,9 +77,10 @@ import { AuthModule } from './auth/auth.module.js';
       }
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
-    AuthModule
+    AuthModule,
+    CompanyModule,    
   ],
-  controllers: [GatewayController],
-  providers: [GatewayService],
+  controllers: [GatewayController, VehiclesController],
+  providers: [GatewayService]
 })
 export class GatewayModule {}

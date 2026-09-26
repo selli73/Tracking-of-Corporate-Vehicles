@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'2ded0cd56c54e6062e0217535de593d53c83cfaa617170721af97b91fcf9fab4'>;
+  StorageHashBase<'a05f290b41ed7d0c7589eecbaf8d43ab7461ba9ccaa4175c58a5e0ca80a1bb44'>;
 export type ExecutionHash =
-  ExecutionHashBase<'bb7377cc32f6ece07123a2df4b43aefb6e29fec245b5a976359ff700d39487cc'>;
+  ExecutionHashBase<'8097638c70fdfb1225139d5a9278a7c9bc080969102190bd42e410a3ec9f3b0e'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -254,20 +254,6 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
-    readonly User: {
-      readonly id: CodecTypes['pg/text@1']['output'];
-      readonly email: CodecTypes['pg/text@1']['output'];
-      readonly passwordHash: CodecTypes['pg/text@1']['output'];
-      readonly name: CodecTypes['pg/text@1']['output'];
-      readonly surname: CodecTypes['pg/text@1']['output'];
-      readonly role: 'MANAGER' | 'DRIVER' | 'COMPANY_ADMIN' | 'OWNER';
-      readonly dismissed: CodecTypes['pg/bool@1']['output'];
-      readonly driverLicenseNumber: CodecTypes['pg/text@1']['output'] | null;
-      readonly driverLicenseExpiresAt: CodecTypes['pg/text@1']['output'] | null;
-      readonly companyId: CodecTypes['pg/text@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
     readonly Vehicle: {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly brand: CodecTypes['pg/text@1']['output'];
@@ -292,20 +278,6 @@ export type FieldInputTypes = {
       readonly actualAddress: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'];
       readonly email: CodecTypes['pg/text@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly User: {
-      readonly id: CodecTypes['pg/text@1']['input'];
-      readonly email: CodecTypes['pg/text@1']['input'];
-      readonly passwordHash: CodecTypes['pg/text@1']['input'];
-      readonly name: CodecTypes['pg/text@1']['input'];
-      readonly surname: CodecTypes['pg/text@1']['input'];
-      readonly role: 'MANAGER' | 'DRIVER' | 'COMPANY_ADMIN' | 'OWNER';
-      readonly dismissed: CodecTypes['pg/bool@1']['input'];
-      readonly driverLicenseNumber: CodecTypes['pg/text@1']['input'] | null;
-      readonly driverLicenseExpiresAt: CodecTypes['pg/text@1']['input'] | null;
-      readonly companyId: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
@@ -336,20 +308,6 @@ export type StorageColumnTypes = {
       readonly tin: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
     };
-    readonly user: {
-      readonly companyId: CodecTypes['pg/text@1']['output'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
-      readonly dismissed: CodecTypes['pg/bool@1']['output'];
-      readonly driverLicenseExpiresAt: CodecTypes['pg/text@1']['output'] | null;
-      readonly driverLicenseNumber: CodecTypes['pg/text@1']['output'] | null;
-      readonly email: CodecTypes['pg/text@1']['output'];
-      readonly id: CodecTypes['pg/text@1']['output'];
-      readonly name: CodecTypes['pg/text@1']['output'];
-      readonly passwordHash: CodecTypes['pg/text@1']['output'];
-      readonly role: 'MANAGER' | 'DRIVER' | 'COMPANY_ADMIN' | 'OWNER';
-      readonly surname: CodecTypes['pg/text@1']['output'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
-    };
     readonly vehicle: {
       readonly brand: CodecTypes['pg/text@1']['output'];
       readonly companyId: CodecTypes['pg/text@1']['output'] | null;
@@ -375,20 +333,6 @@ export type StorageColumnInputTypes = {
       readonly registeredAddress: CodecTypes['pg/text@1']['input'];
       readonly shortName: CodecTypes['pg/text@1']['input'];
       readonly tin: CodecTypes['pg/text@1']['input'];
-      readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
-    };
-    readonly user: {
-      readonly companyId: CodecTypes['pg/text@1']['input'];
-      readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
-      readonly dismissed: CodecTypes['pg/bool@1']['input'];
-      readonly driverLicenseExpiresAt: CodecTypes['pg/text@1']['input'] | null;
-      readonly driverLicenseNumber: CodecTypes['pg/text@1']['input'] | null;
-      readonly email: CodecTypes['pg/text@1']['input'];
-      readonly id: CodecTypes['pg/text@1']['input'];
-      readonly name: CodecTypes['pg/text@1']['input'];
-      readonly passwordHash: CodecTypes['pg/text@1']['input'];
-      readonly role: 'MANAGER' | 'DRIVER' | 'COMPANY_ADMIN' | 'OWNER';
-      readonly surname: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
     };
     readonly vehicle: {
@@ -484,111 +428,6 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
-            readonly user: {
-              columns: {
-                readonly id: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly email: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly passwordHash: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly name: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly surname: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly role: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly dismissed: {
-                  readonly nativeType: 'bool';
-                  readonly codecId: 'pg/bool@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
-                  };
-                };
-                readonly driverLicenseNumber: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly driverLicenseExpiresAt: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly companyId: {
-                  readonly nativeType: 'text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                };
-                readonly createdAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                };
-                readonly updatedAt: {
-                  readonly nativeType: 'timestamptz';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                  readonly nullable: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['email'] }];
-              indexes: readonly [
-                {
-                  readonly name: 'user_email_idx_46df9cad';
-                  readonly prefix: 'user_email_idx';
-                  readonly columns: readonly ['email'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'user_companyId_role_idx_0ce20beb';
-                  readonly prefix: 'user_companyId_role_idx';
-                  readonly columns: readonly ['companyId', 'role'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'user_companyId_idx_33acc5ed';
-                  readonly prefix: 'user_companyId_idx';
-                  readonly columns: readonly ['companyId'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'user';
-                    readonly columns: readonly ['companyId'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'company';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-              ];
-            };
             readonly vehicle: {
               columns: {
                 readonly id: {
@@ -678,10 +517,6 @@ type ContractBase = Omit<
             };
           };
           readonly valueSet: {
-            readonly Role: {
-              readonly kind: 'valueSet';
-              readonly values: readonly ['MANAGER', 'DRIVER', 'COMPANY_ADMIN', 'OWNER'];
-            };
             readonly StatusVehicle: {
               readonly kind: 'valueSet';
               readonly values: readonly ['ACTIVE', 'MAINTENANCE', 'DECOMMISSIONED'];
@@ -697,7 +532,6 @@ type ContractBase = Omit<
   readonly target: 'postgres';
   readonly targetFamily: 'sql';
   readonly roots: {
-    readonly user: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
     readonly company: { readonly namespace: 'public' & NamespaceId; readonly model: 'Company' };
     readonly vehicle: { readonly namespace: 'public' & NamespaceId; readonly model: 'Vehicle' };
   };
@@ -755,14 +589,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly users: {
-                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['companyId'];
-                };
-              };
               readonly vehicles: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -787,95 +613,6 @@ type ContractBase = Omit<
                 readonly actualAddress: { readonly column: 'actualAddress' };
                 readonly phone: { readonly column: 'phone' };
                 readonly email: { readonly column: 'email' };
-                readonly createdAt: { readonly column: 'createdAt' };
-                readonly updatedAt: { readonly column: 'updatedAt' };
-              };
-            };
-          };
-          readonly User: {
-            readonly fields: {
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly email: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly passwordHash: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly name: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly surname: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly role: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly dismissed: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
-              };
-              readonly driverLicenseNumber: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly driverLicenseExpiresAt: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly companyId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-              readonly updatedAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-string@1';
-                };
-              };
-            };
-            readonly relations: {
-              readonly company: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'Company';
-                };
-                readonly cardinality: 'N:1';
-                readonly on: {
-                  readonly localFields: readonly ['companyId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'user';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly id: { readonly column: 'id' };
-                readonly email: { readonly column: 'email' };
-                readonly passwordHash: { readonly column: 'passwordHash' };
-                readonly name: { readonly column: 'name' };
-                readonly surname: { readonly column: 'surname' };
-                readonly role: { readonly column: 'role' };
-                readonly dismissed: { readonly column: 'dismissed' };
-                readonly driverLicenseNumber: { readonly column: 'driverLicenseNumber' };
-                readonly driverLicenseExpiresAt: { readonly column: 'driverLicenseExpiresAt' };
-                readonly companyId: { readonly column: 'companyId' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -957,15 +694,6 @@ type ContractBase = Omit<
           };
         };
         readonly enum: {
-          readonly Role: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'MANAGER'; readonly value: 'MANAGER' },
-              { readonly name: 'DRIVER'; readonly value: 'DRIVER' },
-              { readonly name: 'COMPANY_ADMIN'; readonly value: 'COMPANY_ADMIN' },
-              { readonly name: 'OWNER'; readonly value: 'OWNER' },
-            ];
-          };
           readonly StatusVehicle: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -1013,23 +741,6 @@ type ContractBase = Omit<
           readonly ref: {
             readonly namespace: 'public';
             readonly table: 'company';
-            readonly column: 'updatedAt';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-          readonly onUpdate: { readonly kind: 'generator'; readonly id: 'timestampNow' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'user';
-            readonly column: 'id';
-          };
-          readonly onCreate: { readonly kind: 'generator'; readonly id: 'uuidv4' };
-        },
-        {
-          readonly ref: {
-            readonly namespace: 'public';
-            readonly table: 'user';
             readonly column: 'updatedAt';
           };
           readonly onCreate: { readonly kind: 'generator'; readonly id: 'timestampNow' };

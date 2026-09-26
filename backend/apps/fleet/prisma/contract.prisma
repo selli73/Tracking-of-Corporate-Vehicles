@@ -1,23 +1,29 @@
 // use prisma-8
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  username  String?
-  name      String?
-  posts     Post[]
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+  id                       String     @id      @default(uuid())
+  email                    String     @unique
+  passwordHash             String  
+  name                     String
+  surname                  String
+  role                     Role
+  dismissed                Boolean   @default(false)
+  driverLicenseNumber      String?
+  driverLicenseExpiresAt   String?
+  companyId                String
+  company                  Company   @relation(fields: [companyId], references: [id])
+  createdAt                temporal.createdAtString()
+  updatedAt                temporal.updatedAtString()  
+
+  @@index([email])
+  @@index([companyId, role])  
 }
 
-model Post {
-  id        Int   @id @default(autoincrement())
-  title     String
-  content   String?
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt TimestamptzString @default(now())
-  updatedAt temporal.updatedAtString()
+enum Role {
+  MANAGER
+  DRIVER
+  COMPANY_ADMIN
+  OWNER
 }
 
 model Company {
@@ -26,10 +32,11 @@ model Company {
   shortName         String
   tin               String @unique
   registeredAddress String
-  actualAddress     String? 
+  actualAddress     String?   
   phone             String
   email             String 
   vehicles          Vehicle[]
+  users             User[]
   createdAt         temporal.createdAtString()
   updatedAt         temporal.updatedAtString()
 }

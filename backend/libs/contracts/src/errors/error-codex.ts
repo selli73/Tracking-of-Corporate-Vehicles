@@ -1,0 +1,15 @@
+export const ERROR_CODES = {
+    COMPANY_OR_OWNER_ALREADY_EXISTS: 'COMPANY_OR_OWNER_ALREADY_EXISTS',
+    VEHICLE_NOT_FOUND: 'VEHICLE_NOT_FOUND',
+    VEHICLE_ALREADY_EXISTS: 'VEHICLE_ALREADY_EXISTS',
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+    SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+    INTERNAL_ERROR: 'INTERNAL_ERROR',
+} as const;
+
+export type ErrorCode = keyof typeof ERROR_CODES;
+
+export interface ErrorPayload {
+    code: ErrorCode,
+    message: string
+}

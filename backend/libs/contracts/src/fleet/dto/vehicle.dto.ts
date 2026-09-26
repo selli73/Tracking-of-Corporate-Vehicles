@@ -17,5 +17,6 @@ export class CreateVehicleDto {
 
     @IsString()
     @Length(8, 9)
-    licensePlate: string;    
+    @Transform((licensePlate) => String(licensePlate.value).toUpperCase())
+    licensePlate: string;
 }
