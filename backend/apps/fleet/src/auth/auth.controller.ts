@@ -9,6 +9,6 @@ export class AuthController {
 
   @MessagePattern(FLEET_PATTERNS.USER_LOGIN)
   login(@Payload() data: LoginDto) {
-    
+    return this.authService.login(data);
   }
 }

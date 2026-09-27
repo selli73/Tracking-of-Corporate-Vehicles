@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { LoginDto } from '@app/contracts';
+import { LoginDto, LoginResponse } from '@app/contracts';
 import { RpcException } from '@nestjs/microservices';
 import bcrypt from 'bcrypt';
 
@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 export class AuthService {
     constructor(private _prismaService: PrismaService) {}
 
-    async login(data: LoginDto) {
+    async login(data: LoginDto): Promise<LoginResponse> {
         const user = await this._prismaService.db.orm.public.User.first({
             email: data.email
         });
@@ -24,7 +24,10 @@ export class AuthService {
         }
 
         return {
-            
-        }
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            companyId: user.companyId
+        };
     }
 }

@@ -4,10 +4,11 @@ import { ConfigModule } from '@nestjs/config';
 import { VehicleModule } from './vehicle/vehicle.module.js';
 import { CompanyModule } from './company/company.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { UserModule } from './user/user.module.js';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot({
     isGlobal: true
-  }), VehicleModule, CompanyModule, AuthModule],
+  }), VehicleModule, CompanyModule, AuthModule, UserModule],
 })
 export class FleetModule {}

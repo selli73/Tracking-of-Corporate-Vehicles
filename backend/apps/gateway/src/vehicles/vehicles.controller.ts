@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { CreateVehicleDto, FLEET_PATTERNS, FLEET_SERVICE } from '@app/contracts';
 import { ClientProxy } from '@nestjs/microservices';
 import { timeout } from 'rxjs';
+import { JwtAuthGuard } from '../user/guards/jwt-auth.guard';
 
 @Controller('vehicles')
 export class VehiclesController {
@@ -13,6 +14,7 @@ export class VehiclesController {
   }
 
   @Get('get-all-vehicle')
+  @UseGuards(JwtAuthGuard)
   getAllVehicle() {
     return this._clientFleet.send(FLEET_PATTERNS.GET_ALL_VEHICLE, {});
   }

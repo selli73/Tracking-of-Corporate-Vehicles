@@ -4,6 +4,8 @@ export * from './fleet/fleet.patterns.js';
 export * from './fleet/dto/vehicle.dto.js';
 export * from './fleet/dto/company.dto.js';
 export * from './fleet/response/company.response.js';
-export * from './fleet/role.enum.js';
+export * from './fleet/response/auth.response.js';
+export * from './gateway/role.enum.js';
 export * from './errors/error-codex.js';
-export *  from './fleet/dto/user.dto.js';
+export *  from './gateway/dto/user.dto.js'
+export * from './gateway/typings/index.js';

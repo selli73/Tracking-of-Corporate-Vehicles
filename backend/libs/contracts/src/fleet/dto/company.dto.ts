@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { IsEmail, IsOptional, IsString, Length, MaxLength, ValidateNested } from "class-validator";
+import { RegisterUserDto } from "../../gateway/dto/user.dto";
 
 class CompanyDto {
     @IsString()
@@ -32,28 +33,12 @@ class CompanyDto {
     companyEmail: string;
 }
 
-class OwnerDto {
-    @IsEmail()
-    email: string;
-
-    @IsString()
-    @Length(8, 72)
-    password: string;
-
-    @IsString()
-    @Length(1, 25)
-    name: string;
-
-    @Length(1, 35)
-    surname: string;
-}
-
 export class RegisterCompanyDto {
     @ValidateNested()
     @Type(() => CompanyDto)
     company: CompanyDto;
 
     @ValidateNested()
-    @Type(() => OwnerDto)
-    owner: OwnerDto;
+    @Type(() => RegisterUserDto)
+    owner: RegisterUserDto;
 }

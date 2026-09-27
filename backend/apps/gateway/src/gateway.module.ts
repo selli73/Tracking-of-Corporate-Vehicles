@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { CompanyModule } from './company/company.module.js';
 import { VehiclesController } from './vehicles/vehicles.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { UserModule } from './user/user.module.js';
 
 @Module({
   imports: [
@@ -78,7 +79,8 @@ import { JwtModule } from '@nestjs/jwt';
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
-    CompanyModule,    
+    CompanyModule,
+    UserModule,    
   ],
   controllers: [GatewayController, VehiclesController],
   providers: [GatewayService]
