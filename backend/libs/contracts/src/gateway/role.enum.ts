@@ -1,6 +1,6 @@
-export enum Role { 
-    MANAGER,
-    DRIVER,
-    COMPANY_ADMIN,
-    OWNER
-} 
+export enum Role {
+  MANAGER,
+  DRIVER,
+  COMPANY_ADMIN,
+  OWNER,
+}

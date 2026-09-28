@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-fleet"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  passwordHash           String
+  name                   String
+  surname                String
+  role                   Role
+  dismissed              Boolean   @default(false)
+  driverLicenseNumber    String?
+  driverLicenseExpiresAt DateTime?
+  companyId              String
+  company                Company   @relation(fields: [companyId], references: [id])
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([email])
+  @@index([companyId, role])
+}
+
+enum Role {
+  MANAGER
+  DRIVER
+  COMPANY_ADMIN
+  OWNER
+}
+
+model Company {
+  id                String    @id @default(uuid())
+  officialName      String    @unique
+  shortName         String
+  tin               String    @unique
+  registeredAddress String
+  actualAddress     String?
+  phone             String
+  email             String
+  vehicles          Vehicle[]
+  users             User[]
+  rates             Tariff[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Vehicle {
+  id           String        @id @default(uuid())
+  brand        String
+  model        String
+  vin          String        @unique
+  licensePlate String        @unique
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id])
+  tariffId     String?
+  tariff       Tariff?       @relation(fields: [tariffId], references: [id])
+  status       StatusVehicle @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([companyId, status])
+}
+
+enum StatusVehicle {
+  ACTIVE
+  MAINTENANCE
+  DECOMMISSIONED
+}
+
+model Tariff {
+  id         String    @id @default(uuid())
+  
+  name       String
+  minuteRate Decimal   @db.Decimal(10, 2)
+  kmRate     Decimal   @db.Decimal(10, 2)
+  dayRate    Decimal?   @db.Decimal(10, 2)
+  isActive   Boolean   @default(true)
+  companyId  String
+  company    Company   @relation(fields: [companyId], references: [id])
+  vehicles   Vehicle[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([companyId, name])
+  @@index([companyId])
+}

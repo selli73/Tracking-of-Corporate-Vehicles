@@ -14,6 +14,7 @@ import { CompanyModule } from './company/company.module.js';
 import { VehiclesController } from './vehicles/vehicles.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user/user.module.js';
+import { TariffModule } from './tariff/tariff.module.js';
 
 @Module({
   imports: [
@@ -27,10 +28,10 @@ import { UserModule } from './user/user.module.js';
             urls: ['amqp://rabbitmq:secret@localhost:5672'],
             queue: 'fleet_queue',
             queueOptions: {
-              durable: true              
-            }
-          }
-        })
+              durable: true,
+            },
+          },
+        }),
       },
       {
         name: BOOKING_SERVICE,
@@ -39,9 +40,9 @@ import { UserModule } from './user/user.module.js';
           transport: Transport.TCP,
           options: {
             host: process.env['IP'],
-            port: Number(process.env['BOOKING_PORT'])
-          }
-        })
+            port: Number(process.env['BOOKING_PORT']),
+          },
+        }),
       },
       {
         name: TELEMETRY_SERVICE,
@@ -50,9 +51,9 @@ import { UserModule } from './user/user.module.js';
           transport: Transport.TCP,
           options: {
             host: process.env['IP'],
-            port: Number(process.env['TELEMETRY_PORT'])
-          }
-        })
+            port: Number(process.env['TELEMETRY_PORT']),
+          },
+        }),
       },
       {
         name: BILLING_SERVICE,
@@ -61,9 +62,9 @@ import { UserModule } from './user/user.module.js';
           transport: Transport.TCP,
           options: {
             host: process.env['IP'],
-            port: Number(process.env['BILLING_PORT'])
-          }
-        })
+            port: Number(process.env['BILLING_PORT']),
+          },
+        }),
       },
       {
         name: NOTIFICATION_SERVICE,
@@ -72,17 +73,18 @@ import { UserModule } from './user/user.module.js';
           transport: Transport.TCP,
           options: {
             host: process.env['IP'],
-            port: Number(process.env['NOTIFICATION_PORT'])
-          }
-        })
-      }
+            port: Number(process.env['NOTIFICATION_PORT']),
+          },
+        }),
+      },
     ]),
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     CompanyModule,
-    UserModule,    
+    UserModule,
+    TariffModule,
   ],
   controllers: [GatewayController, VehiclesController],
-  providers: [GatewayService]
+  providers: [GatewayService],
 })
 export class GatewayModule {}

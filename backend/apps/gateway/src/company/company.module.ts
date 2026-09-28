@@ -7,21 +7,23 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ClientsModule.registerAsync([
-    {
-      name: FLEET_SERVICE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://rabbitmq:secret@localhost:5672'],
-          queue: 'fleet_queue',
-          queueOptions: {
-            durable: true              
-          }
-        }
-      })
-    },]),
+  imports: [
+    ClientsModule.registerAsync([
+      {
+        name: FLEET_SERVICE,
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: ['amqp://rabbitmq:secret@localhost:5672'],
+            queue: 'fleet_queue',
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      },
+    ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -29,11 +31,11 @@ import { JwtModule } from '@nestjs/jwt';
           global: true,
           secret: configService.getOrThrow('JWT_ACCESS_SECRET'),
           signOptions: {
-            expiresIn: '1d'
-          }
-        }
-      }
-    })
+            expiresIn: '1d',
+          },
+        };
+      },
+    }),
   ],
   controllers: [CompanyController],
   providers: [CompanyService],

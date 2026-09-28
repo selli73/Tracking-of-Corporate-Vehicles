@@ -3,7 +3,6 @@ import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class NotificationService {
-
   constructor(private _prismaService: PrismaService) {}
 
   getHello() {

@@ -1,20 +1,30 @@
-import { IsEmail, IsString, Length } from "class-validator";
+import { IsDateString, IsEmail, IsString, Length } from 'class-validator';
 
 export class RegisterUserDto {
-    @IsEmail()
-    email: string;
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    @Length(8, 72)
-    password: string;
+  @IsString()
+  @Length(8, 72)
+  password: string;
 
-    @IsString()
-    @Length(1, 25)
-    name: string;
+  @IsString()
+  @Length(1, 25)
+  name: string;
 
-    @Length(1, 35)
-    surname: string;
+  @Length(1, 35)
+  surname: string;
 
-    @IsString()
-    companyId: string;
+  @IsString()
+  companyId: string;
+}
+
+export class RegisterDriverDto extends RegisterUserDto {
+  @IsString()
+  @Length(10, 10)
+  driverLicenseNumber: string;
+
+  
+  @IsDateString()
+  driverLicenseExpiresAt: string;
 }

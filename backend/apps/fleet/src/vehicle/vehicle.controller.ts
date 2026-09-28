@@ -5,16 +5,15 @@ import { FLEET_PATTERNS } from '@app/contracts';
 
 @Controller('vehicle')
 export class VehicleController {
-    
-    constructor(private _vehicleService: VehicleService) {}
+  constructor(private _vehicleService: VehicleService) {}
 
-    @MessagePattern(FLEET_PATTERNS.CREATE_VEHICLE)
-    create(@Payload() data: any) {
-        return this._vehicleService.create(data);
-    }
+  @MessagePattern(FLEET_PATTERNS.CREATE_VEHICLE)
+  create(@Payload() data: any) {
+    return this._vehicleService.create(data);
+  }
 
-    @MessagePattern(FLEET_PATTERNS.GET_ALL_VEHICLE)
-    getAll() {
-        return this._vehicleService.getAll();
-    }
+  @MessagePattern(FLEET_PATTERNS.GET_ALL_VEHICLE)
+  getAll() {
+    return this._vehicleService.getAll();
+  }
 }

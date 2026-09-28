@@ -17,12 +17,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
             urls: ['amqp://rabbitmq:secret@localhost:5672'],
             queue: 'fleet_queue',
             queueOptions: {
-              durable: true              
-            }
-          }
-        })
+              durable: true,
+            },
+          },
+        }),
       },
-    ])
+    ]),
   ],
   controllers: [UserController],
   providers: [UserService],

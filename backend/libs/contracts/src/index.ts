@@ -7,5 +7,7 @@ export * from './fleet/response/company.response.js';
 export * from './fleet/response/auth.response.js';
 export * from './gateway/role.enum.js';
 export * from './errors/error-codex.js';
-export *  from './gateway/dto/user.dto.js'
+export * from './gateway/dto/user.dto.js';
 export * from './gateway/typings/index.js';
+export * from './gateway/dto/tariff.dto.js';
+export * from './fleet/dto/tariff.dto.js';
