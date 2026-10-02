@@ -17,4 +17,7 @@ export const FLEET_PATTERNS = {
 
   CREATE_VEHICLE: 'create-vehicle',
   GET_ALL_VEHICLE: 'get-all-vehicle',
+  CHECH_VEHICLE_STATUS: 'check-vehicle-status',
+  BOOKING_STARTED: 'booking-started',
+  BOOKING_FINISHED: 'booking-finished'
 };

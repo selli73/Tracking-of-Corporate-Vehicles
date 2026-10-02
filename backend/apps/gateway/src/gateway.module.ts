@@ -5,7 +5,7 @@ import { GatewayService } from './gateway.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FLEET_SERVICE } from '@app/contracts';
-import { BOOKING_SERVICE } from '@app/contracts/booking.patterns';
+import { BOOKING_SERVICE } from '@app/contracts';
 import { TELEMETRY_SERVICE } from '@app/contracts/telemetry.patterns';
 import { BILLING_SERVICE } from '@app/contracts/billing.patterns';
 import { NOTIFICATION_SERVICE } from '@app/contracts/notification.patterns';
@@ -15,6 +15,8 @@ import { VehiclesController } from './vehicles/vehicles.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from './user/user.module.js';
 import { TariffModule } from './tariff/tariff.module.js';
+import { BookingModule } from './booking/booking.module.js';
+import { VehiclesService } from './vehicles/vehicles.service';
 
 @Module({
   imports: [
@@ -37,10 +39,13 @@ import { TariffModule } from './tariff/tariff.module.js';
         name: BOOKING_SERVICE,
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
-          transport: Transport.TCP,
+          transport: Transport.RMQ,
           options: {
-            host: process.env['IP'],
-            port: Number(process.env['BOOKING_PORT']),
+            urls: ['amqp://localhost:5672'],
+            queue: 'booking_queue',
+            queueOptions: {
+              durable: true
+            }
           },
         }),
       },
@@ -83,8 +88,9 @@ import { TariffModule } from './tariff/tariff.module.js';
     CompanyModule,
     UserModule,
     TariffModule,
+    BookingModule,
   ],
   controllers: [GatewayController, VehiclesController],
-  providers: [GatewayService],
+  providers: [GatewayService, VehiclesService],
 })
 export class GatewayModule {}

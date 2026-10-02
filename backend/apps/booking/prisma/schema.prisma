@@ -16,7 +16,8 @@ model Booking {
   id        String        @id @default(uuid())
   userId    String
   vehicleId String
-  status    BookingStatus
+  companyId String
+  status    BookingStatus @default(PENDING)
   startDate DateTime
   endDate   DateTime
   createdAt DateTime @default(now())

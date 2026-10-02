@@ -1,27 +1,25 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
-import {
-  CreateVehicleDto,
-  FLEET_PATTERNS,
-  FLEET_SERVICE,
-} from '@app/contracts';
-import { ClientProxy } from '@nestjs/microservices';
-import { timeout } from 'rxjs';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { CreateVehicleDto } from '@app/contracts';
+import type { IJwtUserRequest } from '@app/contracts';
 import { JwtAuthGuard } from '../user/guards/jwt-auth.guard';
+import { RolesGuard } from '../roles/guards/roles.guard';
+import { Roles } from '../roles/roles.decorator';
+import { VehiclesService } from './vehicles.service';
 
 @Controller('vehicles')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class VehiclesController {
-  constructor(@Inject(FLEET_SERVICE) private _clientFleet: ClientProxy) {}
+  constructor(private _vehicleService: VehiclesService) {}
 
   @Post('create-vehicle')
-  createVehicleGateway(@Body() data: CreateVehicleDto) {
-    return this._clientFleet
-      .send(FLEET_PATTERNS.CREATE_VEHICLE, data)
-      .pipe(timeout(10000));
+  @Roles('OWNER', 'COMPANY_ADMIN')
+  createVehicleGateway(@Req() req: IJwtUserRequest, @Body() dto: CreateVehicleDto) {
+    return this._vehicleService.createVehicle(dto, { userId: req.user.userId, role: req.user.role, companyId: req.user.companyId });
   }
 
   @Get('get-all-vehicle')
   @UseGuards(JwtAuthGuard)
   getAllVehicle() {
-    return this._clientFleet.send(FLEET_PATTERNS.GET_ALL_VEHICLE, {});
+    return this._vehicleService.getAllVehicle();
   }
 }

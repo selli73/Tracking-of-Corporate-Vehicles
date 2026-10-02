@@ -4,7 +4,7 @@ import { firstValueFrom, lastValueFrom, timeout } from 'rxjs';
 import {
   BOOKING_SERVICE,
   BOOKING_PATTERNS,
-} from '@app/contracts/booking.patterns';
+} from '@app/contracts';
 import {
   TELEMETRY_PATTERNS,
   TELEMETRY_SERVICE,
@@ -63,17 +63,5 @@ export class GatewayController {
       billing,
       notification,
     };
-  }
-
-  @Post()
-  createVehicleGateway(@Body() data: CreateVehicleDto) {
-    return this._clientFleet
-      .send(FLEET_PATTERNS.CREATE_VEHICLE, data)
-      .pipe(timeout(10000));
-  }
-
-  @Get('all-vehicle')
-  getAllVehicle() {
-    return this._clientFleet.send(FLEET_PATTERNS.GET_ALL_VEHICLE, {});
   }
 }

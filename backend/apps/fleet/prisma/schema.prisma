@@ -65,6 +65,7 @@ model Vehicle {
   tariffId     String?
   tariff       Tariff?       @relation(fields: [tariffId], references: [id])
   status       StatusVehicle @default(ACTIVE)
+  currentBookingId String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
