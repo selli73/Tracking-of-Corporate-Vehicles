@@ -1,7 +1,8 @@
 export const FLEET_SERVICE = 'FLEET_SERVICE';
 
 export const FLEET_PATTERNS = {
-  PING: 'fleet.ping',
+
+  USER_LOGIN: 'user-login',
 
   REGISTER_COMPANY: 'register-company',
   REGISTER_COMPANY_ADMIN: 'register-company-admin',
@@ -13,11 +14,7 @@ export const FLEET_PATTERNS = {
   UPDATE_TARIFF: 'update-tariff',
   DELETE_TARIFF: 'delete-tariff',
 
-  USER_LOGIN: 'user-login',
-
   CREATE_VEHICLE: 'create-vehicle',
   GET_ALL_VEHICLE: 'get-all-vehicle',
   CHECH_VEHICLE_STATUS: 'check-vehicle-status',
-  BOOKING_STARTED: 'booking-started',
-  BOOKING_FINISHED: 'booking-finished'
 };

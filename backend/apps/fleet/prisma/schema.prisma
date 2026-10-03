@@ -55,19 +55,19 @@ model Company {
 }
 
 model Vehicle {
-  id           String        @id @default(uuid())
-  brand        String
-  model        String
-  vin          String        @unique
-  licensePlate String        @unique
-  companyId    String
-  company      Company       @relation(fields: [companyId], references: [id])
-  tariffId     String?
-  tariff       Tariff?       @relation(fields: [tariffId], references: [id])
-  status       StatusVehicle @default(ACTIVE)
+  id               String        @id @default(uuid())
+  brand            String
+  model            String
+  vin              String        @unique
+  licensePlate     String        @unique
+  companyId        String
+  company          Company       @relation(fields: [companyId], references: [id])
+  tariffId         String?
+  tariff           Tariff?       @relation(fields: [tariffId], references: [id])
+  status           StatusVehicle @default(ACTIVE)
   currentBookingId String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   @@index([companyId, status])
 }
@@ -79,12 +79,12 @@ enum StatusVehicle {
 }
 
 model Tariff {
-  id         String    @id @default(uuid())
-  
+  id String @id @default(uuid())
+
   name       String
   minuteRate Decimal   @db.Decimal(10, 2)
   kmRate     Decimal   @db.Decimal(10, 2)
-  dayRate    Decimal?   @db.Decimal(10, 2)
+  dayRate    Decimal?  @db.Decimal(10, 2)
   isActive   Boolean   @default(true)
   companyId  String
   company    Company   @relation(fields: [companyId], references: [id])

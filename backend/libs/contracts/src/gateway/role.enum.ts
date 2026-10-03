@@ -1,6 +1,6 @@
 export enum Role {
-  MANAGER,
-  DRIVER,
-  COMPANY_ADMIN,
-  OWNER,
+  MANAGER = 'MANAGER',
+  DRIVER  = 'DRIVER',
+  COMPANY_ADMIN = 'COMPANY_ADMIN',
+  OWNER = 'OWNER',
 }

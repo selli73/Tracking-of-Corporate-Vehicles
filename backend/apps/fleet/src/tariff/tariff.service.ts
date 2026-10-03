@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTariffDto, DeleteTariffDto, UpdateTariffDto } from './dto/tariff.dto';
-import { RpcException } from '@nestjs/microservices';
 import { CompanyService } from '../company/company.service';
 
 @Injectable()
@@ -54,12 +53,15 @@ export class TariffService {
     async delete(data: DeleteTariffDto) {
         await this._companyService.getCompanyById(data.companyId);
 
-        return this._prismaService.tariff.delete({
+        return this._prismaService.tariff.update({
             where: {
                 companyId_name: {
                     name: data.name,
                     companyId: data.companyId
                 }
+            },
+            data: {
+                isActive: false
             }
         });
     }

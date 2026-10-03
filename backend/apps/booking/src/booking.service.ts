@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
-import { BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, RpcRequest } from '@app/contracts';
+import { firstValueFrom, timeout } from 'rxjs';
+import { BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, RpcRequest } from '@app/contracts';
 import { BookingStatus } from '@prisma/client-booking';
 import { VehicleReleasedEvent } from './events/vehicleReleased';
+import { VehicleStartedEvent } from './events/vehicleStarted';
+import { BookingCreatedEvent } from './events/bookingCreated';
 
 @Injectable()
 export class BookingService {
@@ -27,9 +29,16 @@ export class BookingService {
     }
 
     try {      
-      await firstValueFrom(this._fleetClient.send(FLEET_PATTERNS.CHECH_VEHICLE_STATUS, { vehicleId: dto.data.vehicleId }));
-    } catch(error: any) {
-      throw new RpcException(error.message);
+      await firstValueFrom(this._fleetClient.send(FLEET_PATTERNS.CHECH_VEHICLE_STATUS, { companyId: dto.user.companyId, vehicleId: dto.data.vehicleId }).pipe(timeout(4000)));
+    } catch(error: unknown) {
+      if (isRpcErrorPayload(error)) {
+        throw new RpcException(error);
+      }
+
+      throw new RpcException({
+        code: ERROR_CODES.SERVICE_UNAVAILABLE,
+        message: 'Fleet service is unavailable',
+      })
     }
 
     const booking = await this._prismaService.booking.findFirst({
@@ -37,9 +46,9 @@ export class BookingService {
         companyId: dto.user.companyId,
         vehicleId: dto.data.vehicleId,
         status: {
-          in: [BookingStatus.PENDING, BookingStatus.ACTIVE]
+          notIn: [BookingStatus.CANCELED]
         },
-        startDate: { 
+        startDate: {
           lt: end
         },
         endDate: {
@@ -65,7 +74,7 @@ export class BookingService {
       }
     });
 
-    this._fleetClient.emit(BOOKING_PATTERNS.BOOKING_CREATED, { vehicleId: dto.data.vehicleId, bookingId: newBooking.id });
+    this._fleetClient.emit(BOOKING_PATTERNS.CREATED_BOOKING, new BookingCreatedEvent(dto.data.vehicleId, newBooking.id));
 
     return {
       success: true,
@@ -73,10 +82,19 @@ export class BookingService {
     }
   }
 
+  async getBookings(dto: RpcRequest<null>) {
+    return this._prismaService.booking.findMany({
+      where: {
+        companyId: dto.user.companyId
+      }
+    });
+  }
+
   async start(bookingId: string, companyId: string) {
     const booking = await this._prismaService.booking.findUnique({
       where: {
-       id: bookingId       
+       id: bookingId,
+       companyId    
       }
     });
 
@@ -87,18 +105,18 @@ export class BookingService {
       });
     }
 
-    if (booking.companyId !== companyId) {
+    if (booking.status !== BookingStatus.PENDING) {
       throw new RpcException({
-        code: ERROR_CODES.NOT_YOUR_RESERATION,
-        message: 'The booking does not apply to this company'
+        code: ERROR_CODES.BOOKING_NOT_STARTED,
+        message: 'We cannot start the trip'
       });
     }
 
-    if (booking.status !== BookingStatus.PENDING) {
+    if (booking.startDate > new Date()) {
       throw new RpcException({
-        code: ERROR_CODES.DOES_NOT_START,
-        message: 'We cannot start the trip'
-      });
+        code: ERROR_CODES.BOOKING_NOT_STARTED,
+        message: 'You cannot start using the vehicle before the reservation start date'
+      })
     }
 
     const startedBooking = await this._prismaService.booking.update({
@@ -110,15 +128,19 @@ export class BookingService {
       }
     });
 
-    this._fleetClient.emit(FLEET_PATTERNS.BOOKING_STARTED, new VehicleReleasedEvent(booking.vehicleId, booking.id));    
+    this._fleetClient.emit(BOOKING_PATTERNS.BOOKING_STARTED, new VehicleStartedEvent(booking.vehicleId, booking.id));    
 
     return startedBooking;
   }
 
   async finish(bookingId: string, companyId: string) {
+
+    const now = new Date();
+
     const booking = await this._prismaService.booking.findUnique({
       where: {
-        id: bookingId
+        id: bookingId,
+        companyId
       }
     });
 
@@ -129,16 +151,9 @@ export class BookingService {
       });
     }
 
-    if (booking.companyId !== companyId) {
-      throw new RpcException({
-        code: ERROR_CODES.NOT_YOUR_RESERATION,
-        message: 'The booking does not apply to this company'
-      });
-    }
-
     if (booking.status !== BookingStatus.ACTIVE) {
       throw new RpcException({
-        code: ERROR_CODES.DOES_NOT_COMPLETE,
+        code: ERROR_CODES.BOOKING_NOT_COMPLETE,
         message: 'We cannot complete the booking'
       });
     }
@@ -148,11 +163,12 @@ export class BookingService {
         id: booking.id
       },
       data: {
-        status: BookingStatus.COMPLETED
+        status: BookingStatus.COMPLETED,
+        finishedAt: now
       }
     });
 
-    this._fleetClient.emit(FLEET_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.vehicleId, booking.id));
+    this._fleetClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.vehicleId, booking.id));
 
     return finishedBooking;
   }

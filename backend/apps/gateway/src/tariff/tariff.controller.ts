@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Inject, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { TariffService } from './tariff.service.js';
-import { CreateTariffDto } from '@app/contracts';
+import { CreateTariffDto, Role } from '@app/contracts';
 import type { DeleteTariffDto, IJwtUserRequest, UpdateTariffDto } from '@app/contracts';
 import { JwtAuthGuard } from '../user/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../roles/guards/roles.guard.js';
@@ -8,7 +8,7 @@ import { Roles } from '../roles/roles.decorator.js';
 
 @Controller('tariff')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('OWNER', 'COMPANY_ADMIN')
+@Roles(Role.OWNER, Role.COMPANY_ADMIN)
 export class TariffController {
   constructor(private readonly _tariffService: TariffService) {}
 
@@ -18,7 +18,7 @@ export class TariffController {
   }
 
   @Get('get-company-rates')
-  @Roles('OWNER', 'COMPANY_ADMIN','MANAGER', 'DRIVER')
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER, Role.DRIVER)
   getCompanyRates(@Request() req: IJwtUserRequest) {
     return this._tariffService.getCompanyRates(req.user.companyId);
   }

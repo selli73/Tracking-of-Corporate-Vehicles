@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import { CreateVehicleDto } from '@app/contracts';
+import { CreateVehicleDto, Role } from '@app/contracts';
 import type { IJwtUserRequest } from '@app/contracts';
 import { JwtAuthGuard } from '../user/guards/jwt-auth.guard';
 import { RolesGuard } from '../roles/guards/roles.guard';
@@ -12,14 +12,13 @@ export class VehiclesController {
   constructor(private _vehicleService: VehiclesService) {}
 
   @Post('create-vehicle')
-  @Roles('OWNER', 'COMPANY_ADMIN')
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN)
   createVehicleGateway(@Req() req: IJwtUserRequest, @Body() dto: CreateVehicleDto) {
     return this._vehicleService.createVehicle(dto, { userId: req.user.userId, role: req.user.role, companyId: req.user.companyId });
   }
 
   @Get('get-all-vehicle')
-  @UseGuards(JwtAuthGuard)
-  getAllVehicle() {
-    return this._vehicleService.getAllVehicle();
+  getAllVehicle(@Req() req: IJwtUserRequest) {
+    return this._vehicleService.getAllVehicle(req.user.companyId);
   }
 }

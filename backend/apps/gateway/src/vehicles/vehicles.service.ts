@@ -1,7 +1,7 @@
 import { CreateVehicleDto, FLEET_PATTERNS, FLEET_SERVICE, RpcRequest, UserContext } from "@app/contracts";
 import { Inject, Injectable } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { timeout } from "rxjs";
+import { firstValueFrom, timeout } from "rxjs";
 
 @Injectable()
 export class VehiclesService {
@@ -14,7 +14,7 @@ export class VehiclesService {
                 .pipe(timeout(4000));
     }
 
-    getAllVehicle() {
-        return this._clientFleet.send(FLEET_PATTERNS.GET_ALL_VEHICLE, {});
+    getAllVehicle(companyId: string) {
+        return firstValueFrom(this._clientFleet.send(FLEET_PATTERNS.GET_ALL_VEHICLE, { companyId }).pipe(timeout(4000)));
     }
 }
