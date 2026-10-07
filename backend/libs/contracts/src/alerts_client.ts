@@ -1,0 +1,1 @@
+export const ALERTS_CLIENT = 'ALERTS_CLIENT';

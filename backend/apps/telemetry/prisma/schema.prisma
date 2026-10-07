@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-telemetry"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model VehicleLocation {
+  id String @id @default(uuid())
+  vehicleId String
+  speed Float
+  location Unsupported("geometry(Point, 4326)")
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  @@index([vehicleId, timestamp])
+}
+
+model Geofence {
+  id String @id @default(uuid())
+  name String
+  polygon Unsupported("geometry(Polygon, 4326)")
+}

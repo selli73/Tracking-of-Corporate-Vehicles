@@ -1,23 +1,19 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import postgres from '@prisma/orm-postgres/runtime';
-import type { Contract } from '../../prisma/contract.d';
-import contractJson from '../../prisma/contract.json' with { type: 'json' };
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client-telemetry';
 
 @Injectable()
-export class PrismaService implements OnModuleDestroy {
-  public readonly db;
-
-  constructor(private readonly config: ConfigService) {
-    this.db = postgres<Contract>({
-      contractJson,
-      url: this.config.getOrThrow<string>('TELEMETRY_DATABASE_URL'),
+export class PrismaService extends PrismaClient {
+  constructor(private _configService: ConfigService) {
+    const databaseUrl = _configService.getOrThrow('TELEMETRY_DATABASE_URL');
+    const adapter = new PrismaPg({
+      connectionString: databaseUrl,
     });
+    super({ adapter });
   }
 
-  async onModuleDestroy() {
-    if ('$disconnect' in this.db && typeof this.db.$disconnect === 'function') {
-      await this.db.$disconnect();
-    }
+  async onModuleInit() {
+    await this.$connect();
   }
 }

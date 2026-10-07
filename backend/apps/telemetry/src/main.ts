@@ -6,10 +6,13 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     TelemetryModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.RMQ,
       options: {
-        host: process.env['IP'],
-        port: Number(process.env['TELEMETRY_PORT']),
+        urls: ['amqp://rabbitmq:secret@localhost:5672'],
+        queue: 'telemetry_queue',
+        queueOptions: {
+          durable: true
+        }
       },
     },
   );

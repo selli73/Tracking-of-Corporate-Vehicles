@@ -1,29 +1,24 @@
 import { Module } from '@nestjs/common';
-import { TelemetryController } from './telemetry.controller.js';
 import { TelemetryService } from './telemetry.service.js';
-import { PrismaModule } from './prisma/prisma.module.js';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';import { QUEUES } from '@app/contracts';
-;
+import { TelemetryController } from './telemetry.controller.js';
+import { TELEMETRY_SERVICE } from '@app/contracts';
+import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
-    PrismaModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     ClientsModule.registerAsync([
       {
-        name: 'ALERTS_CLIENT',
+        name: TELEMETRY_SERVICE,
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
             urls: ['amqp://localhost:5672'],
-            queue: QUEUES.ALERTS,
+            queue: 'telemetry_queue',
             queueOptions: {
-              durable: true,
-            },
+              durable: true
+            }
           },
         }),
       },

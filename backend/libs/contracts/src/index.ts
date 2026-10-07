@@ -25,3 +25,8 @@ export * from './booking/booking.patterns.js';
 
 export * from './rpc/rpc.request.js';
 export * from './booking/typings/index.js';
+
+export * from './telemetry/telemetry.patterns.js';
+export * from './telemetry/dto/location.js';
+
+export * from './queues.js';
