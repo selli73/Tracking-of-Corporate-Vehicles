@@ -1,6 +1,6 @@
 import { Role } from "../gateway/role.enum";
 
-export interface UserContext {
+export class UserContext {
     userId: string;
 
     companyId: string;

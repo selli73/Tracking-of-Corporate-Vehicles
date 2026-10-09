@@ -28,5 +28,6 @@ export * from './booking/typings/index.js';
 
 export * from './telemetry/telemetry.patterns.js';
 export * from './telemetry/dto/location.js';
+export * from './telemetry/dto/geofence.js';
 
 export * from './queues.js';

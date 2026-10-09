@@ -14,7 +14,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://localhost:5672'],
+            urls: ['amqp://rabbitmq:secret@localhost:5672'],
             queue: 'telemetry_queue',
             queueOptions: {
               durable: true

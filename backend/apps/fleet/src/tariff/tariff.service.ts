@@ -32,6 +32,19 @@ export class TariffService {
         });
     }
 
+    async getVehicleTariff(data: { vehicleId: string }) {
+        const vehicle = await this._prismaService.vehicle.findFirst({
+            where: {
+                id: data.vehicleId
+            },
+            select: {
+                tariff: true
+            }
+        });
+
+        return vehicle?.tariff;
+    }
+
     async update(data: UpdateTariffDto) {
         const company = await this._companyService.getCompanyById(data.companyId);        
 

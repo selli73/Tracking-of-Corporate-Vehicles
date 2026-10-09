@@ -27,4 +27,7 @@ model Geofence {
   id String @id @default(uuid())
   name String
   polygon Unsupported("geometry(Polygon, 4326)")
+  companyId String @unique
+
+  @@index([companyId])
 }

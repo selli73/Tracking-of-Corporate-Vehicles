@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client-telemetry';
+import { PrismaClient } from '@prisma/client-billing';
 
 @Injectable()
 export class PrismaService extends PrismaClient {

@@ -18,6 +18,11 @@ export class TariffController {
     return this._tariffService.getCompanyRates(dto.companyId);
   }
 
+  @MessagePattern('get_vehicle_tariff')
+  getVehicleTariff(@Payload() dto: { vehickeId: string }) {
+    return this._tariffService.getVehicleTariff(dto);
+  }
+
   @MessagePattern(FLEET_PATTERNS.UPDATE_TARIFF)
   update(dto: UpdateTariffDto) {
     return this._tariffService.update(dto);
