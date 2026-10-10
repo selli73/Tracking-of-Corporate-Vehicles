@@ -8,7 +8,7 @@ import type { IStartOrFinishBooking, RpcRequest } from '@app/contracts';
 export class BookingController {
   constructor(private _bookingService: BookingService) {}
 
-  @MessagePattern(BOOKING_PATTERNS.BOOK_VEHICLE)
+  @MessagePattern(BOOKING_PATTERNS.CREATE_BOOKING)
   handleCreateBooking(@Payload() dto: RpcRequest<CreateBookingDto>) {
     return this._bookingService.handleCreateBooking(dto);
   }

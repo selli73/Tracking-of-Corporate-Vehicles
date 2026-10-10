@@ -14,7 +14,8 @@ datasource db {
 
 model Booking {
   id         String        @id @default(uuid())
-  userId     String
+  recorderId String
+  driverId   String
   vehicleId  String
   companyId  String
   status     BookingStatus @default(PENDING)

@@ -8,6 +8,10 @@ export class CreateBookingDto {
     vehicleId: string;
 
     @IsString()
+    @ApiProperty({ description: 'Driver ID'})
+    driverId: string;
+
+    @IsString()
     @IsDateString()
     @ApiProperty({ description: 'booking start date'})
     startDate: string;

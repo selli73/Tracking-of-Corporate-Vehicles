@@ -2,18 +2,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, RpcRequest } from '@app/contracts';
+import { BOOKING_EVENTS_CLIENT, BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, RpcRequest } from '@app/contracts';
 import { BookingStatus } from '@prisma/client-booking';
-import { VehicleReleasedEvent } from './events/vehicleReleased';
+import { VehicleReleasedEvent } from '@app/contracts';
 import { VehicleStartedEvent } from './events/vehicleStarted';
-import { BookingCreatedEvent } from './events/bookingCreated';
+import { BookingCreatedEvent } from '@app/contracts';
 
 @Injectable()
 export class BookingService {
-  constructor(private _prismaService: PrismaService, @Inject('FLEET_SERVICE') private _fleetClient: ClientProxy) {}
+  constructor(private _prismaService: PrismaService, @Inject('FLEET_SERVICE') private _fleetClient: ClientProxy, 
+    @Inject(BOOKING_EVENTS_CLIENT) private _bookingEventsClient: ClientProxy ) {}
 
   async handleCreateBooking(dto: RpcRequest<CreateBookingDto>) {
-
     const start = new Date(dto.data.startDate);
     const end = new Date(dto.data.endDate);
     
@@ -46,7 +46,7 @@ export class BookingService {
         companyId: dto.user.companyId,
         vehicleId: dto.data.vehicleId,
         status: {
-          notIn: [BookingStatus.CANCELED]
+          notIn: [BookingStatus.CANCELED, BookingStatus.COMPLETED]
         },
         startDate: {
           lt: end
@@ -67,14 +67,15 @@ export class BookingService {
     const newBooking = await this._prismaService.booking.create({
       data: { 
         vehicleId: dto.data.vehicleId,
-        userId: dto.user.userId,
+        recorderId: dto.user.userId,
+        driverId: dto.data.driverId,
         startDate: start,
         endDate: end,
         companyId: dto.user.companyId
       }
     });
 
-    this._fleetClient.emit(BOOKING_PATTERNS.CREATED_BOOKING, new BookingCreatedEvent(dto.data.vehicleId, newBooking.id));
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.CREATED_BOOKING, new BookingCreatedEvent(newBooking.id, dto.data.vehicleId, newBooking.driverId, newBooking.startDate.toISOString(), newBooking.endDate.toISOString()));
 
     return {
       success: true,
@@ -128,7 +129,7 @@ export class BookingService {
       }
     });
 
-    this._fleetClient.emit(BOOKING_PATTERNS.BOOKING_STARTED, new VehicleStartedEvent(booking.vehicleId, booking.id));    
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_STARTED, new VehicleStartedEvent(booking.vehicleId, booking.id));    
 
     return startedBooking;
   }
@@ -168,7 +169,8 @@ export class BookingService {
       }
     });
 
-    this._fleetClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.vehicleId, booking.id));
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.id, booking.vehicleId, finishedBooking.driverId, 
+      finishedBooking.recorderId, finishedBooking.startDate.toISOString(), finishedBooking.finishedAt? finishedBooking.finishedAt.toISOString() : 'empty'));
 
     return finishedBooking;
   }

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDateString, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsNumber, IsString, Max, Min } from "class-validator";
 
 export class SaveLocationDto {
     @IsString()
@@ -15,6 +15,8 @@ export class SaveLocationDto {
     lng: number; 
     
     @IsNumber()
+    @Min(0)
+    @Max(500)
     @ApiProperty({ description: 'Vehicle speed', example: '60' })
     speed: number; 
 

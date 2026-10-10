@@ -21,7 +21,9 @@ export * from './gateway/dto/tariff.dto.js';
 
 
 export * from './booking/dto/booking.dto.js';
-export * from './booking/booking.patterns.js';
+export * from './booking/booking.patterns.js'
+export * from './booking/events/bookingCreated.js';
+export * from './booking/events/vehicleReleased.js';
 
 export * from './rpc/rpc.request.js';
 export * from './booking/typings/index.js';

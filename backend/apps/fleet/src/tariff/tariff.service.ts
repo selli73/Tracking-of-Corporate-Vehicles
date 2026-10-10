@@ -33,16 +33,24 @@ export class TariffService {
     }
 
     async getVehicleTariff(data: { vehicleId: string }) {
-        const vehicle = await this._prismaService.vehicle.findFirst({
+        const vehicleTariff = await this._prismaService.vehicle.findFirst({
             where: {
                 id: data.vehicleId
             },
             select: {
-                tariff: true
+                tariff: {
+                    select: {
+                        minuteRate: true,
+                        kmRate: true
+                    }
+                }
             }
         });
 
-        return vehicle?.tariff;
+        return {
+            minuteRate: vehicleTariff?.tariff?.minuteRate ?? 0,
+            kmRate: vehicleTariff?.tariff?.kmRate ?? 0
+        };
     }
 
     async update(data: UpdateTariffDto) {

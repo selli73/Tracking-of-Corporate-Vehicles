@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateVehicleDto, ERROR_CODES, UserContext } from '@app/contracts';
+import { CreateVehicleDto, ERROR_CODES, LinkTariffToVehicleDto, RpcRequest, UserContext } from '@app/contracts';
 import { RpcException } from '@nestjs/microservices';
 import { StatusVehicle } from '@prisma/client-fleet';
 import { VehicleReleasedEvent } from '../events/vehicleReleased';
@@ -49,6 +49,54 @@ export class VehicleService {
         companyId: userContext.companyId   
       },
     });
+  }
+
+  async linkTariffToVehicle(data: LinkTariffToVehicleDto, user: UserContext) {
+    const vehicle = await this._prismaService.vehicle.findUnique({
+      where: {
+        id: data.vehicleId
+      }
+    });
+
+    if (!vehicle) {
+      throw new RpcException({
+        code: ERROR_CODES.VEHICLE_NOT_FOUND,
+        message: 'The vehicle does not exist'
+      });
+    }
+
+    if (vehicle.companyId !== user.companyId) {
+      throw new RpcException({
+        code: ERROR_CODES.VEHICLE_FORBIDDEN,
+        message: 'The vehicle does not belong to your company'
+      })
+    }
+
+    const updatedVehicle = await this._prismaService.vehicle.update({
+      where: {
+        id: data.vehicleId
+      },
+      data: {
+        tariffId: data.tariffId
+      },
+      select: {
+        brand: true,
+        licensePlate: true,
+        tariff: {
+          select: {
+            name: true,
+            kmRate: true,            
+            minuteRate: true
+          }
+        }
+      }
+    });
+
+    return {
+      message: 'The tariff was applied to the vehicle',
+      data: updatedVehicle
+    }
+
   }
 
   getAll(companyId: string) {

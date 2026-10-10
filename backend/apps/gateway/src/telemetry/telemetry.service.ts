@@ -16,13 +16,11 @@ export class TelemetryService {
         return response;
     }
 
-    async saveLocation(data: SaveLocationDto) {
-        this._clientTelemetry.emit(TELEMETRY_PATTERNS.SAVE_LOCATION, data);
+    async saveLocation(user: UserContext, data: SaveLocationDto) {
+        this._clientTelemetry.emit<any, RpcRequest<SaveLocationDto>>(TELEMETRY_PATTERNS.SAVE_LOCATION, { user, data });
 
         return {
-        status: 'accepted'
+            status: 'accepted'
         };
-    }
-
-    
+    }   
 }

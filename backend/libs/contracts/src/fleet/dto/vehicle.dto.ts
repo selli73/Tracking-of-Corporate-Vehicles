@@ -25,3 +25,13 @@ export class CreateVehicleDto {
   @ApiProperty({ description: 'Vehicle registration number', example: 'А001АА77' })
   licensePlate: string;
 }
+
+export class LinkTariffToVehicleDto {
+  @IsString()
+  @ApiProperty({ description: 'Vehicle id'})
+  vehicleId: string;
+  
+  @IsString()
+  @ApiProperty({ description: 'TariffId id'})
+  tariffId: string;
+}

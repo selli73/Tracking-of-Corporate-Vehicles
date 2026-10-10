@@ -5,6 +5,6 @@
     "rootDir": "../..",
     "outDir": "../../dist/apps/booking"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../libs/contracts/src/booking/events/bookingCreated.ts", "../../libs/contracts/src/booking/events/vehicleReleased.ts"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

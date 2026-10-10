@@ -1,4 +1,4 @@
-import { BOOKING_PATTERNS, BOOKING_SERVICE, CreateBookingDto, IStartOrFinishBooking, Role, RpcRequest, StartOrFinishBookingDto, UserContext } from '@app/contracts';
+import { BOOKING_PATTERNS, BOOKING_SERVICE, CreateBookingDto, IStartOrFinishBooking, Role, RpcRequest, UserContext } from '@app/contracts';
 import { Inject, Injectable } from '@nestjs/common';import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 ;
@@ -8,7 +8,7 @@ export class BookingService {
   constructor(@Inject(BOOKING_SERVICE) private _clientBooking: ClientProxy) {}
 
   async create(data: CreateBookingDto, userContext: UserContext) {
-    const booking = await firstValueFrom(this._clientBooking.send<unknown, RpcRequest<CreateBookingDto>>(BOOKING_PATTERNS.BOOK_VEHICLE, 
+    const booking = await firstValueFrom(this._clientBooking.send<unknown, RpcRequest<CreateBookingDto>>(BOOKING_PATTERNS.CREATE_BOOKING, 
       { 
         user: { ...userContext },
         data

@@ -15,14 +15,14 @@ datasource db {
 model Invoice {
   id String @id @default(uuid())
   bookingId String 
-  userId String
+  driverId String
   amount Int
   status InvoiceStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([bookingId])
-  @@index([userId])
+  @@index([driverId])
 }
 
 enum InvoiceStatus {
