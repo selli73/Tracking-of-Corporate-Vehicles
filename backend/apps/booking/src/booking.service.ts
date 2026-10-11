@@ -179,7 +179,7 @@ export class BookingService {
   }
 
   async paymentFailed(data: PaymentDto) {
-    const bookingUpdate = this._prismaService.booking.findUnique({
+    const bookingUpdate = await this._prismaService.booking.findUnique({
       where: {
         id: data.bookingId
       }
