@@ -67,7 +67,7 @@ export class VehicleService {
 
     if (vehicle.companyId !== user.companyId) {
       throw new RpcException({
-        code: ERROR_CODES.VEHICLE_FORBIDDEN,
+        code: ERROR_CODES.FORBIDDEN,
         message: 'The vehicle does not belong to your company'
       })
     }

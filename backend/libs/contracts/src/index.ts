@@ -10,6 +10,7 @@ export * from './fleet/dto/company.dto.js';
 export * from './fleet/response/company.response.js';
 export * from './fleet/response/auth.response.js';
 export * from './fleet/dto/tariff.dto.js';
+export * from './fleet/visibleRoles.js';
 
 
 export * from './gateway/role.enum.js';
@@ -31,5 +32,8 @@ export * from './booking/typings/index.js';
 export * from './telemetry/telemetry.patterns.js';
 export * from './telemetry/dto/location.js';
 export * from './telemetry/dto/geofence.js';
+
+export * from './billing/billing.patterns.js';
+export * from './billing/dto/payment.dto.js';
 
 export * from './queues.js';

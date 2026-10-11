@@ -3,6 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import bcrypt from 'bcrypt';
 import { RegisterDriverDto, RegisterUserDto } from './dto/user.dto';
 import { Role } from '@prisma/client-fleet';
+import { ERROR_CODES, UserContext, VISIBLE_ROLES } from '@app/contracts';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class UserService {
@@ -66,5 +68,28 @@ export class UserService {
     const { passwordHash,...objectWithoutPassword } = user;
 
     return objectWithoutPassword;
+  }
+
+  async getAllUser(data: UserContext) {
+    const visibleRoles = VISIBLE_ROLES[data.role];
+
+    if (visibleRoles.length == 0) {
+      throw new RpcException({
+        code: ERROR_CODES.FORBIDDEN,
+        message: 'Insufficient permissions',
+      })
+    }
+
+    return this._prismaService.user.findMany({
+      where: {
+        companyId: data.companyId,
+        role: { in: visibleRoles },        
+      },
+      omit: {
+        passwordHash: true,
+        companyId: true,
+        updatedAt: true
+      }      
+    })    
   }
 }

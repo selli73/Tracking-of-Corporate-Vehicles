@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { BOOKING_EVENTS_CLIENT, BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, RpcRequest } from '@app/contracts';
+import { BOOKING_EVENTS_CLIENT, BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, PaymentDto, RpcRequest } from '@app/contracts';
 import { BookingStatus } from '@prisma/client-booking';
 import { VehicleReleasedEvent } from '@app/contracts';
 import { VehicleStartedEvent } from './events/vehicleStarted';
@@ -10,6 +10,9 @@ import { BookingCreatedEvent } from '@app/contracts';
 
 @Injectable()
 export class BookingService {
+
+  private _logger = new Logger(BookingService.name);
+
   constructor(private _prismaService: PrismaService, @Inject('FLEET_SERVICE') private _fleetClient: ClientProxy, 
     @Inject(BOOKING_EVENTS_CLIENT) private _bookingEventsClient: ClientProxy ) {}
 
@@ -173,5 +176,27 @@ export class BookingService {
       finishedBooking.recorderId, finishedBooking.startDate.toISOString(), finishedBooking.finishedAt? finishedBooking.finishedAt.toISOString() : 'empty'));
 
     return finishedBooking;
+  }
+
+  async paymentFailed(data: PaymentDto) {
+    const bookingUpdate = this._prismaService.booking.findUnique({
+      where: {
+        id: data.bookingId
+      }
+    });
+
+    if (!bookingUpdate) {
+      this._logger.log(`Booking by ID: ${data.bookingId} not found`);
+      return;
+    }
+
+    await this._prismaService.booking.update({
+      where: {
+        id: data.bookingId
+      },
+      data: {
+        status: BookingStatus.DEBT
+      }
+    });
   }
 }

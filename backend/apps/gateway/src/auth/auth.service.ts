@@ -23,7 +23,6 @@ export class AuthService {
 
     const payload = {
       sub: response.userId,
-      email: response.email,
       role: response.role,
       companyId: response.companyId,
     };

@@ -90,7 +90,6 @@ export class TelemetryService {
   }
 
   async calculateDistance(data: VehicleReleasedEvent) {
-    console.log(data);
     const result: { distance_meters?: number }[] = await this._prismaService.$queryRaw`
       SELECT
         ST_Length(ST_MakeLine(location)::geography) as distance_meters
@@ -104,7 +103,6 @@ export class TelemetryService {
       ) as ordered_points;
     `;
 
-    console.log(result);
     const metres = result[0]?.distance_meters || 0;
 
     return {

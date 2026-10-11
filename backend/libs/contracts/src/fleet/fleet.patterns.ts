@@ -3,6 +3,7 @@ export const FLEET_SERVICE = 'FLEET_SERVICE';
 export const FLEET_PATTERNS = {
 
   USER_LOGIN: 'user-login',
+  GET_ALL_USERS: 'get-all-users',
 
   REGISTER_COMPANY: 'register-company',
   REGISTER_COMPANY_ADMIN: 'register-company-admin',

@@ -26,13 +26,13 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [url],
+      exchange: EXCHANGES.BOOKING_EVENTS,
+      exchangeType: 'topic',
+      wildcards: true,
       queue: QUEUES.FLEET_EVENTS,
       queueOptions: {
         durable: true
-      },
-      exchange: EXCHANGES.BOOKING_EVENTS,
-      exchangeType: 'topic',
-      wildcards: true      
+      }           
     }
   });
 

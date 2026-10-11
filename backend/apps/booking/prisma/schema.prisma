@@ -33,4 +33,5 @@ enum BookingStatus {
   ACTIVE
   COMPLETED
   CANCELED
+  DEBT
 }

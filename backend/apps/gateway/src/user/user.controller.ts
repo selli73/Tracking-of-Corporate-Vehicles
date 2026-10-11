@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service.js';
 import { Roles } from '../roles/roles.decorator.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
@@ -32,5 +32,11 @@ export class UserController {
   @ApiOperation({ summary: 'Register driver' }) @ApiResponse({ status: 201, description: 'The driver is registered' })
   registerDriver(@Request() req: IJwtUserRequest, @Body() dto: RegisterDriverDto) {
     return this.userService.registerDriver(dto, req.user.companyId);
+  }
+
+  @Get('get-all-users')
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER)
+  getAllUsers(@Req() req: IJwtUserRequest) {
+    return this.userService.getAllUsers(req.user);
   }
 }

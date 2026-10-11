@@ -1,4 +1,4 @@
-import { FLEET_PATTERNS, FLEET_SERVICE, RegisterDriverDto, RegisterUserDto } from '@app/contracts';
+import { FLEET_PATTERNS, FLEET_SERVICE, RegisterDriverDto, RegisterUserDto, UserContext } from '@app/contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -43,5 +43,11 @@ export class UserService {
       status: 201,
       data: driverCompany
     };
+  }
+
+  async getAllUsers(user: UserContext) {
+    const users = await firstValueFrom(this._clientFleet.send<unknown, UserContext>(FLEET_PATTERNS.GET_ALL_USERS, user));
+
+    return users;
   }
 }

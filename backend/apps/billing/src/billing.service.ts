@@ -2,11 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { FLEET_PATTERNS, FLEET_SERVICE, TELEMETRY_PATTERNS, TELEMETRY_SERVICE, VehicleReleasedEvent } from '@app/contracts';
-
+import { BILLING_EVENTS_CLIENT, BILLING_PATTERNS, FLEET_PATTERNS, FLEET_SERVICE, PaymentDto, TELEMETRY_PATTERNS, TELEMETRY_SERVICE, VehicleReleasedEvent } from '@app/contracts';
+import { InvoiceStatus } from '@prisma/client-billing';
 @Injectable()
 export class BillingService {
-  constructor(@Inject(FLEET_SERVICE) private _clientFleet: ClientProxy, 
+  constructor(@Inject(BILLING_EVENTS_CLIENT) private _billingEventsClient: ClientProxy,
+    @Inject(FLEET_SERVICE) private _clientFleet: ClientProxy, 
     @Inject(TELEMETRY_SERVICE) private _clientTelemetry: ClientProxy, private _prismaService: PrismaService) {}
 
 
@@ -43,14 +44,14 @@ export class BillingService {
         id: invoice.id
       },
       data: {
-        status: isPaymentSuccessful ? 'PAID' : 'FAILED'
+        status: isPaymentSuccessful ? InvoiceStatus.PAID : InvoiceStatus.FAILED
       }
     });
 
     if (isPaymentSuccessful) {
-      this.
+      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_SUCCESS, new PaymentDto(invoice.driverId, invoice.bookingId, invoice.amount));
     } else {
-
+      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_FAILED, new PaymentDto(invoice.driverId, invoice.bookingId, invoice.amount));
     }
   }
 }
