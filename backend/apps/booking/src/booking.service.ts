@@ -30,9 +30,10 @@ export class BookingService {
         message: 'The booking period is incorrect'
       });
     }
-
+    let driver;
     try {      
       await firstValueFrom(this._fleetClient.send(FLEET_PATTERNS.CHECH_VEHICLE_STATUS, { companyId: dto.user.companyId, vehicleId: dto.data.vehicleId }).pipe(timeout(4000)));
+      driver = await firstValueFrom(this._fleetClient.send<{ email: string }>(FLEET_PATTERNS.GET_DRIVER_EMAIL, { driverId: dto.data.driverId }));
     } catch(error: unknown) {
       if (isRpcErrorPayload(error)) {
         throw new RpcException(error);
@@ -72,13 +73,14 @@ export class BookingService {
         vehicleId: dto.data.vehicleId,
         recorderId: dto.user.userId,
         driverId: dto.data.driverId,
+        driverEmail: driver.email, 
         startDate: start,
         endDate: end,
         companyId: dto.user.companyId
       }
     });
 
-    this._bookingEventsClient.emit(BOOKING_PATTERNS.CREATED_BOOKING, new BookingCreatedEvent(newBooking.id, dto.data.vehicleId, newBooking.driverId, newBooking.startDate.toISOString(), newBooking.endDate.toISOString()));
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.CREATED_BOOKING, new BookingCreatedEvent(newBooking.id, dto.data.vehicleId, newBooking.driverId, newBooking.driverEmail, newBooking.startDate.toISOString(), newBooking.endDate.toISOString()));
 
     return {
       success: true,
@@ -172,7 +174,7 @@ export class BookingService {
       }
     });
 
-    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.id, booking.vehicleId, finishedBooking.driverId, 
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.id, booking.vehicleId, finishedBooking.driverId, finishedBooking.driverEmail,
       finishedBooking.recorderId, finishedBooking.startDate.toISOString(), finishedBooking.finishedAt? finishedBooking.finishedAt.toISOString() : 'empty'));
 
     return finishedBooking;

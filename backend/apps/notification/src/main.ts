@@ -14,6 +14,22 @@ async function bootstrap() {
       urls: [url],
       exchange: EXCHANGES.BILLING_EVENTS,
       exchangeType: 'topic',
+      noAck: false,
+      wildcards: true,
+      queue: QUEUES.NOTIFICATION_EVENTS,
+      queueOptions: {
+        durable: true
+      }
+    }
+  });
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [url],
+      exchange: EXCHANGES.BOOKING_EVENTS,
+      exchangeType: 'topic',
+      noAck: false,
       wildcards: true,
       queue: QUEUES.NOTIFICATION_EVENTS,
       queueOptions: {

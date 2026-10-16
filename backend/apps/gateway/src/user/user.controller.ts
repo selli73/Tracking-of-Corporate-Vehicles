@@ -39,4 +39,10 @@ export class UserController {
   getAllUsers(@Req() req: IJwtUserRequest) {
     return this.userService.getAllUsers(req.user);
   }
+
+  @Get('me')
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER, Role.DRIVER)
+  me(@Req() req: IJwtUserRequest) {
+    return this.userService.me(req.user);
+  }
 }

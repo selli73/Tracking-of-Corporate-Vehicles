@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { LoginDto, LoginResponse } from '@app/contracts';
+import { ERROR_CODES, LoginDto, LoginResponse } from '@app/contracts';
 import { RpcException } from '@nestjs/microservices';
 import bcrypt from 'bcrypt';
 
@@ -16,13 +16,19 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new RpcException('Incorrect username or password');
+      throw new RpcException({
+        code: ERROR_CODES.INCORRECT_USERNAME_OR_PASSWORD,
+        message: 'Неправильный логин или пароль'
+      });
     }
 
     const passwordHash = await bcrypt.compare(data.password, user.passwordHash);
 
     if (!passwordHash) {
-      throw new RpcException('Incorrect username or password');
+      throw new RpcException({
+        code: ERROR_CODES.INCORRECT_USERNAME_OR_PASSWORD,
+        message: 'Неправильный логин или пароль'
+      });
     }
 
     return {

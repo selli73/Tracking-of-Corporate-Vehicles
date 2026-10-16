@@ -92,4 +92,29 @@ export class UserService {
       }      
     })    
   }
+
+  async me(data: UserContext) {
+    const me = await this._prismaService.user.findUnique({
+      where: {
+        id: data.userId
+      },
+      omit: {
+        updatedAt: true,
+        passwordHash: true,
+      }
+    });
+
+    return me;
+  }
+
+  async getUserEmail(data: { driverId: string }) {
+    return this._prismaService.user.findUnique({
+      where: {
+        id: data.driverId
+      },
+      select: {
+        email: true
+      }
+    })
+  }
 }

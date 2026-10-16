@@ -5,6 +5,6 @@
     "rootDir": "../..",
     "outDir": "../../dist/apps/telemetry"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../libs/contracts/src/telemetry/events/geofenceViolation.ts"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

@@ -3,7 +3,7 @@ import { TelemetryController } from './telemetry.controller.js';
 import { TelemetryService } from './telemetry.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';import { QUEUES } from '@app/contracts';
+import { ClientsModule, Transport } from '@nestjs/microservices';import { NOTIFICATION_SERVICE, QUEUES } from '@app/contracts';
 ;
 
 @Module({
@@ -14,13 +14,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';import { QUEUES
     }),
     ClientsModule.registerAsync([
       {
-        name: 'ALERTS_CLIENT',
+        name: NOTIFICATION_SERVICE,
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://rabbitmq:secret@localhost:5672'],
-            queue: QUEUES.ALERTS,
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+            queue: QUEUES.NOTIFICATION_EVENTS,
             queueOptions: {
               durable: true,
             },

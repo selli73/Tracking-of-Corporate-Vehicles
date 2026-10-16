@@ -11,3 +11,27 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model NotificationLog {
+  id String @id @default(uuid())
+  recipient String
+  eventType String
+  payload String
+  error String?
+  channel NotificationChannel
+  status NotificationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  @@index([recipient])
+}
+
+enum NotificationChannel {
+  TELEGRAM
+  EMAIL  
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}

@@ -49,9 +49,9 @@ export class BillingService {
     });
 
     if (isPaymentSuccessful) {
-      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_SUCCESS, new PaymentDto(invoice.driverId, invoice.bookingId, invoice.amount));
+      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_SUCCESS, new PaymentDto(invoice.driverId, data.driverEmail, invoice.bookingId, invoice.amount));
     } else {
-      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_FAILED, new PaymentDto(invoice.driverId, invoice.bookingId, invoice.amount));
+      this._billingEventsClient.emit(BILLING_PATTERNS.PAYMENT_FAILED, new PaymentDto(invoice.driverId, data.driverEmail, invoice.bookingId, invoice.amount));
     }
   }
 }

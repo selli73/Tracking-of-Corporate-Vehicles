@@ -16,7 +16,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-
+    
     const { status, code, message } = this.resolve(exception);
 
     if (status === undefined || status >= 500) {
@@ -36,10 +36,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const status = exception.getStatus();
       const body: any = exception.getResponse();
 
+      const codes: Record<number, string> = {
+        400: 'VALIDATION_ERROR',
+        401: 'UNAUTHORIZED',
+        403: 'FORBIDDEN',
+        404: 'NOT_FOUND',
+      };
+
+
       return {
         status,
-        code: status === 400 ? 'VALIDATION_ERROR' : 'HTTP_ERROR',
-        message: Array.isArray(body?.message) ? body.message : undefined,
+        code: codes[status] ?? 'HTTP_ERROR',
+        message: typeof body === 'string' ? body : (body?.message ?? exception.message),
       };
     }
 

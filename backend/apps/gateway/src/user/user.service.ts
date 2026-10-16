@@ -50,4 +50,10 @@ export class UserService {
 
     return users;
   }
+
+  async me(user: UserContext) {
+    const me = await firstValueFrom(this._clientFleet.send<unknown, UserContext>(FLEET_PATTERNS.GET_ME, user));
+
+    return me;
+  }
 }

@@ -20,7 +20,7 @@ export class VehiclesController {
     return this._vehicleService.createVehicle(dto, { userId: req.user.userId, role: req.user.role, companyId: req.user.companyId });
   }
 
-  @Get('get-all-vehicle')
+  @Get('get-all')
   @ApiOperation({ summary: 'Get a list of cars'}) @ApiResponse({ status: 201, description: 'List of cars received' })
   getAllVehicle(@Req() req: IJwtUserRequest) {
     return this._vehicleService.getAllVehicle(req.user.companyId);

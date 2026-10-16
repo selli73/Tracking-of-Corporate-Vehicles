@@ -27,4 +27,14 @@ export class UserController {
   getAllUser(@Payload() dto: UserContext) {
     return this._userService.getAllUser(dto);
   }
+
+  @MessagePattern(FLEET_PATTERNS.GET_ME)
+  me(@Payload() dto: UserContext) {
+    return this._userService.me(dto);
+  }
+
+  @MessagePattern(FLEET_PATTERNS.GET_DRIVER_EMAIL)
+  getUserDate(@Payload() dto: { driverId: string }) {
+    return this._userService.getUserEmail(dto);
+  }
 }

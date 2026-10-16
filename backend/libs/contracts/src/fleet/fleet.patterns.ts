@@ -4,6 +4,7 @@ export const FLEET_PATTERNS = {
 
   USER_LOGIN: 'user-login',
   GET_ALL_USERS: 'get-all-users',
+  GET_ME: 'get-me',
 
   REGISTER_COMPANY: 'register-company',
   REGISTER_COMPANY_ADMIN: 'register-company-admin',
@@ -19,6 +20,8 @@ export const FLEET_PATTERNS = {
   GET_ALL_VEHICLE: 'get-all-vehicle',
   CHECH_VEHICLE_STATUS: 'check-vehicle-status',
   LINK_TARIFF_TO_VEHICLE: 'link-tariff-to-vehicle',
+
+  GET_DRIVER_EMAIL: 'fleet.driver-email',
 
   GET_VEHICLE_TARIFF: 'fleet.get-vehicle-tariff'
 };

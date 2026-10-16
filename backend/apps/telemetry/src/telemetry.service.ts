@@ -1,15 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
-import { CreateGeofenceDto, ERROR_CODES, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, VehicleReleasedEvent } from '@app/contracts';
+import { CreateGeofenceDto, ERROR_CODES, NOTIFICATION_SERVICE, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, VehicleReleasedEvent } from '@app/contracts';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { GeofenceViolation } from './events/geofenceViolation';
+import { GeofenceViolation } from '@app/contracts';
 
 @Injectable()
 export class TelemetryService {
 
   private _logger = new Logger(TelemetryService.name);
   
-  constructor(private _prismaService: PrismaService, @Inject('ALERTS_CLIENT') private _clientAlerts: ClientProxy) {}
+  constructor(private _prismaService: PrismaService, @Inject(NOTIFICATION_SERVICE) private _clientNotification: ClientProxy) {}
 
   async createGeofenceForCompany({ user, data }: RpcRequest<CreateGeofenceDto>) {
     
@@ -82,7 +82,7 @@ export class TelemetryService {
     `;
 
     if (row.total > 0n && row.inside === 0n) {
-      this._clientAlerts.emit(
+      this._clientNotification.emit(
         TELEMETRY_PATTERNS.GEOFENCE_VIOLATION,
         new GeofenceViolation(data.vehicleId, data.timestamp),
       );

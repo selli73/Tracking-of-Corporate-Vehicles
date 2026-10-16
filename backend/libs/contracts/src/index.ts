@@ -32,8 +32,14 @@ export * from './booking/typings/index.js';
 export * from './telemetry/telemetry.patterns.js';
 export * from './telemetry/dto/location.js';
 export * from './telemetry/dto/geofence.js';
+export * from './telemetry/events/geofenceViolation.js';
 
 export * from './billing/billing.patterns.js';
 export * from './billing/dto/payment.dto.js';
 
+
+export * from './notification/notification.patterns.js';
+
 export * from './queues.js';
+
+

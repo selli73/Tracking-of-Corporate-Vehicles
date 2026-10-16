@@ -16,6 +16,7 @@ model Booking {
   id         String        @id @default(uuid())
   recorderId String
   driverId   String
+  driverEmail String
   vehicleId  String
   companyId  String
   status     BookingStatus @default(PENDING)
