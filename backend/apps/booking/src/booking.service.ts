@@ -7,6 +7,7 @@ import { BookingStatus } from '@prisma/client-booking';
 import { VehicleReleasedEvent } from '@app/contracts';
 import { VehicleStartedEvent } from './events/vehicleStarted';
 import { BookingCreatedEvent } from '@app/contracts';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class BookingService {
@@ -22,7 +23,7 @@ export class BookingService {
     
     if (start.getTime() < Date.now() - 60000) {
       throw new RpcException({ code: ERROR_CODES.START_IN_PAST, message: 'Start date is in the past' });
-    }    
+    }
 
     if (start >= end) {
       throw new RpcException({
@@ -91,7 +92,8 @@ export class BookingService {
   async getBookings(dto: RpcRequest<null>) {
     return this._prismaService.booking.findMany({
       where: {
-        companyId: dto.user.companyId
+        companyId: dto.user.companyId,
+        driverId: dto.user.role === 'DRIVER'? dto.user.userId : undefined
       }
     });
   }
@@ -125,6 +127,13 @@ export class BookingService {
       })
     }
 
+    if (new Date() >= booking.endDate) {
+      throw new RpcException({
+        code: ERROR_CODES.BOOKING_PERIOD_EXPIRED,
+        message: 'The trip cannot be started because the booking period has expired'
+      });
+    }
+
     const startedBooking = await this._prismaService.booking.update({
       where: {
         id: booking.id
@@ -140,7 +149,6 @@ export class BookingService {
   }
 
   async finish(bookingId: string, companyId: string) {
-
     const now = new Date();
 
     const booking = await this._prismaService.booking.findUnique({
@@ -178,6 +186,61 @@ export class BookingService {
       finishedBooking.recorderId, finishedBooking.startDate.toISOString(), finishedBooking.finishedAt? finishedBooking.finishedAt.toISOString() : 'empty'));
 
     return finishedBooking;
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async expiredBookings() {
+    try {
+      const { count } = await this._prismaService.booking.updateMany({
+        where: {
+          status: BookingStatus.PENDING,
+          endDate: {
+            lte: new Date()
+          }
+        },
+        data: {
+          status: BookingStatus.EXPIRED
+        }
+      });
+
+      if (count > 0) {        
+        this._logger.log(`Просроченных броней переведено в EXPIRED: ${count}`);
+      }      
+
+    } catch(error) {
+      this._logger.error('Не удалось обработать просроченные брони', error)
+    }
+  }
+
+  async cancel(bookingId: string, companyId: string) {
+    const booking = await this._prismaService.booking.findUnique({
+      where: {
+        id: bookingId
+      }
+    });
+
+    if (!booking || booking.companyId !== companyId) {
+      throw new RpcException({
+        code: ERROR_CODES.BOOKING_NOT_FOUND,
+        message: 'Booking not found'
+      });
+    }
+
+    const { count } = await this._prismaService.booking.updateMany({
+      where: {
+        id: bookingId,
+        status: BookingStatus.PENDING
+      },
+      data: {
+        status: BookingStatus.CANCELED
+      }
+    });
+
+    if (count === 0) {
+      throw new RpcException({ code: ERROR_CODES.CANNOT_BE_CANCELED, message: 'The trip cannot be cancelled' });
+    }  
+    
+    return { ...booking, status: BookingStatus.CANCELED };
   }
 
   async paymentFailed(data: PaymentDto) {

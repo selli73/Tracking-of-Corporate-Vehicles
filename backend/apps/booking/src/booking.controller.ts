@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { BookingService } from './booking.service.js';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { BILLING_PATTERNS, BOOKING_PATTERNS, CreateBookingDto } from '@app/contracts';
-import type { IStartOrFinishBooking, RpcRequest } from '@app/contracts';
+import type { ChangeStatusBooking, RpcRequest } from '@app/contracts';
 import { PaymentDto } from '@app/contracts';
 
 @Controller()
@@ -20,13 +20,18 @@ export class BookingController {
   }
 
   @MessagePattern(BOOKING_PATTERNS.START_BOOKING)
-  start(@Payload() dto: IStartOrFinishBooking) {
+  start(@Payload() dto: ChangeStatusBooking) {
     return this._bookingService.start(dto.data.bookingId, dto.user.companyId)
   }
 
   @MessagePattern(BOOKING_PATTERNS.FINISH_BOOKING)
-  finish(@Payload() dto: IStartOrFinishBooking) {
+  finish(@Payload() dto: ChangeStatusBooking) {
     return this._bookingService.finish(dto.data.bookingId, dto.user.companyId);
+  }
+
+  @MessagePattern(BOOKING_PATTERNS.CANCEL_BOOKING)
+  cancel(@Payload() dto: ChangeStatusBooking) {
+    return this._bookingService.cancel(dto.data.bookingId, dto.user.companyId);
   }
 
   @EventPattern(BILLING_PATTERNS.PAYMENT_FAILED)

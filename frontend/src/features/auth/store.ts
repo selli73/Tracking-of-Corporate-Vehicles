@@ -1,10 +1,11 @@
 import { makeAutoObservable } from "mobx";
-import type { CurrentUser, LoginDto } from "./types";
+import type { CurrentUser, LoginDto, Role } from "./types";
 import { authApi } from "./api";
 import { tokenStorage } from "@/shared/api/token";
 import { isApiError } from "@/shared/api/ApiError";
+import { CREATABLE_ROLES, type CreatableRole } from "./permissions";
 
-type AuthStatus = 'unknown' | 'authenticated' | 'guest';
+type AuthStatus = 'unknown' | 'authenticated' | 'guest' | 'unavailable';
 
 class AuthStore {
     user: CurrentUser | null = null;
@@ -18,7 +19,13 @@ class AuthStore {
         return this.status === 'authenticated';
     }
 
+    get creatableRoles(): readonly CreatableRole[] {
+        return this.user ? CREATABLE_ROLES[this.user.role] : [];
+    }
+
     async init() {
+        this.status = 'unknown';
+
         if (!tokenStorage.get()) {
             this.setGuest();
             return;
@@ -30,8 +37,11 @@ class AuthStore {
         } catch(error: unknown) {
             if (isApiError(error) && error.status === 401) {
                 tokenStorage.clear();
+                this.setGuest();
+            } else {
+                this.setUnavailable();
             }
-            this.setGuest();
+            
         }
     }
 
@@ -41,6 +51,10 @@ class AuthStore {
 
         const user = await authApi.me();
         this.setUser(user);
+    }
+
+    hasAnyRole(roles: readonly  Role[]) {
+        return this.user !== null && roles.includes(this.user.role);
     }
 
     logout() {
@@ -56,6 +70,11 @@ class AuthStore {
     setGuest() {
         this.user = null;
         this.status = 'guest';
+    }
+
+    setUnavailable() {
+        this.user = null;
+        this.status = 'unavailable';
     }
 }
 

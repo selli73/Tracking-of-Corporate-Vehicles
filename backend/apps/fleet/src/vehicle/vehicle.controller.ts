@@ -2,7 +2,7 @@ import { Controller, Logger, Patch } from '@nestjs/common';
 import { VehicleService } from './vehicle.service';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { BOOKING_PATTERNS, CreateVehicleDto, FLEET_PATTERNS } from '@app/contracts';
-import type { LinkTariffToVehicleDto, RpcRequest } from '@app/contracts';
+import type { LinkTariffToVehicleDto, RpcRequest, UpdateStatusVehicleDto } from '@app/contracts';
 import { VehicleReleasedEvent } from '../events/vehicleReleased';
 import { VehicleStartedEvent } from '../events/vehicleStarted';
 import { BookingCreatedEvent } from '../events/bookingCreated';
@@ -22,6 +22,11 @@ export class VehicleController {
   @MessagePattern(FLEET_PATTERNS.LINK_TARIFF_TO_VEHICLE)
   linkTariffToVehicle(@Payload() dto: RpcRequest<LinkTariffToVehicleDto>) {
     return this._vehicleService.linkTariffToVehicle(dto.data, dto.user);
+  }
+
+  @MessagePattern(FLEET_PATTERNS.UPDATE_STATUS_VEHICLE)
+  updateStatusVehicle(@Payload() dto: RpcRequest<UpdateStatusVehicleDto>) {
+    return this._vehicleService.updateStatusVehicle(dto.data, dto.user);
   }
 
   @MessagePattern(FLEET_PATTERNS.GET_ALL_VEHICLE)

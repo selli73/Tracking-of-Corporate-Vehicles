@@ -11,6 +11,20 @@ export class UserService {
   constructor(private _prismaService: PrismaService) {}
 
   async registerAdmin(data: RegisterUserDto) {
+
+    const isExistUser = await this._prismaService.user.findUnique({
+      where: {
+        email: data.email
+      }
+    });
+
+    if (isExistUser) {
+      throw new RpcException({
+        code: ERROR_CODES.UNIQUENESS,
+        message: 'A user with such an email address exists',
+      });
+    }
+
     const hashPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this._prismaService.user.create({
@@ -30,6 +44,20 @@ export class UserService {
   }
 
  async registerManager(data: RegisterUserDto) {
+
+    const isExistUser = await this._prismaService.user.findUnique({
+      where: {
+        email: data.email
+      }
+    });
+
+    if (isExistUser) {
+      throw new RpcException({
+        code: ERROR_CODES.UNIQUENESS,
+        message: 'A user with such an email address exists',
+      });
+    }
+
     const hashPassword = await bcrypt.hash(data.password, 10);
 
     const user = await this._prismaService.user.create({
@@ -49,6 +77,19 @@ export class UserService {
   }
 
   async registerDriver(data: RegisterDriverDto) {
+    const isExistUser = await this._prismaService.user.findUnique({
+      where: {
+        email: data.email
+      }
+    });
+
+    if (isExistUser) {
+      throw new RpcException({
+        code: ERROR_CODES.UNIQUENESS,
+        message: 'A user with such an email address exists',
+      });
+    }
+
     const hashPassword = await bcrypt.hash(data.password, 10);
     const expiryDate = new Date(data.driverLicenseExpiresAt);
     

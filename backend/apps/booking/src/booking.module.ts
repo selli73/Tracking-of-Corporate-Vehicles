@@ -5,9 +5,11 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { BOOKING_EVENTS_CLIENT, EXCHANGES, FLEET_SERVICE } from '@app/contracts';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,

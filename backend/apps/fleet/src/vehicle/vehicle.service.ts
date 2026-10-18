@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateVehicleDto, ERROR_CODES, LinkTariffToVehicleDto, RpcRequest, UserContext } from '@app/contracts';
+import { CreateVehicleDto, ERROR_CODES, LinkTariffToVehicleDto, RpcRequest, UpdateStatusVehicleDto, UserContext } from '@app/contracts';
 import { RpcException } from '@nestjs/microservices';
 import { StatusVehicle } from '@prisma/client-fleet';
 import { VehicleReleasedEvent } from '../events/vehicleReleased';
@@ -72,31 +72,52 @@ export class VehicleService {
       })
     }
 
-    const updatedVehicle = await this._prismaService.vehicle.update({
+    return this._prismaService.vehicle.update({
       where: {
         id: data.vehicleId
       },
       data: {
         tariffId: data.tariffId
-      },
-      select: {
-        brand: true,
-        licensePlate: true,
-        tariff: {
-          select: {
-            name: true,
-            kmRate: true,            
-            minuteRate: true
-          }
-        }
+      }
+    });    
+  }
+
+  async updateStatusVehicle(data: UpdateStatusVehicleDto, user: UserContext) {
+    const vehicle = await this._prismaService.vehicle.findUnique({
+      where: {
+        id: data.vehicleId
       }
     });
 
-    return {
-      message: 'The tariff was applied to the vehicle',
-      data: updatedVehicle
+    if (!vehicle) {
+      throw new RpcException({
+        code: ERROR_CODES.VEHICLE_NOT_FOUND,
+        message: 'The vehicle does not exist'
+      });
     }
 
+    if (vehicle.companyId !== user.companyId) {
+      throw new RpcException({
+        code: ERROR_CODES.FORBIDDEN,
+        message: 'The vehicle does not belong to your company'
+      });
+    }
+
+    if (vehicle.currentBookingId) {
+      throw new RpcException({
+        code: ERROR_CODES.VEHICLE_IS_IN_USE,
+        message: 'The vehicle is currently in use; please try again later'
+      });
+    }
+
+    return this._prismaService.vehicle.update({
+      where: {
+        id: data.vehicleId        
+      },
+      data: {
+        status: data.status
+      }
+    });
   }
 
   getAll(companyId: string) {

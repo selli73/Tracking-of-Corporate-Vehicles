@@ -1,4 +1,4 @@
-import { BOOKING_PATTERNS, BOOKING_SERVICE, CreateBookingDto, IStartOrFinishBooking, Role, RpcRequest, UserContext } from '@app/contracts';
+import { BOOKING_PATTERNS, BOOKING_SERVICE, CreateBookingDto, ChangeStatusBooking, Role, RpcRequest, UserContext } from '@app/contracts';
 import { Inject, Injectable } from '@nestjs/common';import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
 ;
@@ -31,7 +31,7 @@ export class BookingService {
   }
 
   async start(bookingId: string, userContext: UserContext) {
-    const response = await firstValueFrom(this._clientBooking.send<unknown, IStartOrFinishBooking>(BOOKING_PATTERNS.START_BOOKING, 
+    const response = await firstValueFrom(this._clientBooking.send<unknown, ChangeStatusBooking>(BOOKING_PATTERNS.START_BOOKING, 
       { 
         user: {         
           ...userContext
@@ -46,7 +46,7 @@ export class BookingService {
   }
 
   async finish(bookingId: string, userContext: UserContext) {
-    const response = await firstValueFrom(this._clientBooking.send<unknown, IStartOrFinishBooking>(BOOKING_PATTERNS.FINISH_BOOKING,
+    const response = await firstValueFrom(this._clientBooking.send<unknown, ChangeStatusBooking>(BOOKING_PATTERNS.FINISH_BOOKING,
       { 
         user: {           
           ...userContext
@@ -56,6 +56,19 @@ export class BookingService {
         }
       }
     ).pipe(timeout(4000)));
+
+    return response;
+  }
+
+  async cancel(bookingId: string, userContext: UserContext) {
+    const response = await firstValueFrom(this._clientBooking.send<unknown, ChangeStatusBooking>(BOOKING_PATTERNS.CANCEL_BOOKING, {
+      user: {
+        ...userContext
+      },
+      data: {
+        bookingId
+      }
+    }).pipe(timeout(4000)));
 
     return response;
   }

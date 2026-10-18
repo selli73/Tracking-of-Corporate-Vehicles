@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, IsUUID, Length, ValidateIf } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -26,12 +26,30 @@ export class CreateVehicleDto {
   licensePlate: string;
 }
 
+export enum VehicleStatus {
+  ACTIVE = 'ACTIVE',
+  MAINTENANCE = 'MAINTENANCE',
+  DECOMMISSIONED = 'DECOMMISSIONED'
+}
+export class UpdateStatusVehicleDto {
+  @IsUUID()
+  @ApiProperty({ description: 'Vehicle id'})
+  vehicleId: string;
+
+  @IsNotEmpty()
+  @IsEnum(VehicleStatus, { message: `status должен быть одним из: ${Object.values(VehicleStatus).join(', ')}` })
+  @ApiProperty({ description: 'Vehicle status'})
+  status: VehicleStatus;
+}
+
+
 export class LinkTariffToVehicleDto {
-  @IsString()
+  @IsUUID()
   @ApiProperty({ description: 'Vehicle id'})
   vehicleId: string;
   
-  @IsString()
+  @ValidateIf((dto: LinkTariffToVehicleDto) => dto.tariffId !== null)
+  @IsUUID()
   @ApiProperty({ description: 'TariffId id'})
   tariffId: string;
 }

@@ -18,6 +18,7 @@ export const FLEET_PATTERNS = {
 
   CREATE_VEHICLE: 'create-vehicle',
   GET_ALL_VEHICLE: 'get-all-vehicle',
+  UPDATE_STATUS_VEHICLE: 'update-status-vehicle',
   CHECH_VEHICLE_STATUS: 'check-vehicle-status',
   LINK_TARIFF_TO_VEHICLE: 'link-tariff-to-vehicle',
 

@@ -2,15 +2,23 @@ import axios from "axios"
 import { tokenStorage } from "./token";
 import { ApiError } from "./ApiError";
 
-export const http = axios.create({
-    timeout: 10000,
-    baseURL: '/api'
-});
-
 interface ErrorBody {
   code?: string;
   message?: string | string[];
 }
+
+type UnauthorizedHandler = () => void;
+
+let onUnauthorized: UnauthorizedHandler | null = null;
+
+export const setUnauthorizedHandler = (handler: UnauthorizedHandler) => {
+    onUnauthorized = handler;
+}
+
+export const http = axios.create({
+    timeout: 10000,
+    baseURL: '/api'
+});
 
 // перед каждым запросом: добавляет токен
 http.interceptors.request.use((config) => {
@@ -25,7 +33,15 @@ http.interceptors.request.use((config) => {
 // после каждого ответа с ошибкой превратить ее в ApiError
 http.interceptors.response.use(
     (response) => response, 
-    (error: unknown) => Promise.reject(toApiError(error))
+    (error: unknown) => { 
+        const apiError = toApiError(error);
+
+        if (apiError.status === 401) {
+            onUnauthorized?.();
+        }
+
+        return Promise.reject(apiError);
+    }
 );
 
 const toApiError = (error: unknown): ApiError => {
@@ -45,8 +61,7 @@ const toApiError = (error: unknown): ApiError => {
         ? data.message.join(', ')
         : (data?.message ?? 'Ошибка сервера');
 
-    const code = data?.code ?? (status >= 502 ? 'SERVICE_UNAVAILABLE' : `HTTP_${status}`);
+    const code = data?.code ?? (status >= 500 ? 'SERVICE_UNAVAILABLE' : `HTTP_${status}`);
 
     return new ApiError(code, message, status);
 }
-

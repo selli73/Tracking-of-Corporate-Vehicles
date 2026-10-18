@@ -22,7 +22,7 @@ export class BookingController {
   }
 
   @Get()
-  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER)
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER, Role.DRIVER)
   @ApiOperation({ summary: 'Get a list of bookings' }) @ApiResponse({ status: 200, description: 'List of bookings received' })
   getBookings(@Req() req: IJwtUserRequest) {
     return this._bookingService.getBookings(req.user);
@@ -40,5 +40,11 @@ export class BookingController {
   @ApiOperation({ summary: 'End trip' }) @ApiResponse({ status: 200, description: 'The trip has been successfully completed' })
   finish(@Req() req: IJwtUserRequest, @Param('id') id: string) {
     return this._bookingService.finish(id, req.user);
+  }
+
+  @Patch(':id/cancel')
+  @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER)
+  cancel(@Req() req: IJwtUserRequest, @Param('id') id: string) {
+    return this._bookingService.cancel(id, req.user);
   }
 }

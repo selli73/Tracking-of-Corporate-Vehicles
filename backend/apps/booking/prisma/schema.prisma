@@ -35,4 +35,5 @@ enum BookingStatus {
   COMPLETED
   CANCELED
   DEBT
+  EXPIRED
 }

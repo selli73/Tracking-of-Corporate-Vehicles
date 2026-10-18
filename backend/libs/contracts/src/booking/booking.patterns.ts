@@ -9,7 +9,10 @@ export const BOOKING_PATTERNS = {
 
   START_BOOKING: 'start-booking',
   FINISH_BOOKING: 'finish-booking',
+  CANCEL_BOOKING: 'cancel-booking',
 
   BOOKING_STARTED: 'booking.started',
-  BOOKING_FINISHED: 'booking.finished'
+  BOOKING_FINISHED: 'booking.finished',
+  BOOKING_CANCELED: 'booking.canceled',
+  BOOKINGS_EXPIRED: 'booking.expired'
 } as const;
