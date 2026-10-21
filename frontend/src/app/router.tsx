@@ -10,6 +10,7 @@ import { UsersPage } from "@/pages/UsersPage/UsersPage";
 import { TariffsPage } from "@/pages/TariffsPage/TariffsPage";
 import { CreateVehiclePage } from "@/pages/CreateVehiclePage/CreateVehiclePage";
 import { CreateBookingPage } from "@/pages/CreateBookingPage/CreateBookingPage";
+import { MapPage } from "@/pages/MapPage/MapPage";
 
 export const router = createBrowserRouter([
     {
@@ -33,14 +34,18 @@ export const router = createBrowserRouter([
                         element: <RequireRole roles={ACCESS.bookingsCreate} />,
                         children: [{ path: '/bookings/new', element: <CreateBookingPage /> }],
                     },
-                    {                        
+                    {                                            
+                        element: <RequireRole roles={ACCESS.users} />,
                         children: [{ path: '/users', element: <UsersPage /> }],
-                        element: <RequireRole roles={ACCESS.users} />
                     },
-                    {                        
+                    {                                                
+                        element: <RequireRole roles={ACCESS.tariffs} />,
                         children: [{ path: '/tariffs', element: <TariffsPage /> }],
-                        element: <RequireRole roles={ACCESS.tariffs} />
-                    }
+                    },
+                    {
+                        element: <RequireRole roles={ACCESS.map} />,
+                        children: [{ path: '/map', element: <MapPage /> }],
+                    },
                 ]
             }        
         ]

@@ -3,7 +3,7 @@ import { TelemetryController } from './telemetry.controller.js';
 import { TelemetryService } from './telemetry.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';import { NOTIFICATION_SERVICE, QUEUES } from '@app/contracts';
+import { ClientsModule, Transport } from '@nestjs/microservices';import { FLEET_SERVICE, NOTIFICATION_SERVICE, QUEUES } from '@app/contracts';
 ;
 
 @Module({
@@ -27,6 +27,20 @@ import { ClientsModule, Transport } from '@nestjs/microservices';import { NOTIFI
           },
         }),
       },
+      {
+        name: FLEET_SERVICE,
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+            queue: QUEUES.FLEET,
+            queueOptions: {
+              durable: true,
+            },
+          },
+        }),
+      }
     ])
   ],
   controllers: [TelemetryController],

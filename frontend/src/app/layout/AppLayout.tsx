@@ -13,7 +13,8 @@ const MENU: MenuItem[] = [
     { to: '/vehicles', label: 'Машины', roles: ACCESS.vehicles },
     { to: 'bookings', label: 'Брони', roles: ACCESS.bookings },
     { to: '/users', label: 'Пользователи', roles: ACCESS.users },
-    { to: '/tariffs', label: 'Тарифы', roles: ACCESS.tariffs }
+    { to: '/tariffs', label: 'Тарифы', roles: ACCESS.tariffs },
+    { to: '/map', label: 'Карта', roles: ACCESS.map },
 ];
 
 export const AppLayout = observer(() => {

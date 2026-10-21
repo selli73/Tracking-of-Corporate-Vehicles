@@ -1,15 +1,22 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
-import { CreateGeofenceDto, ERROR_CODES, NOTIFICATION_SERVICE, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, VehicleReleasedEvent } from '@app/contracts';
+import { CreateGeofenceDto, ERROR_CODES, FLEET_PATTERNS, FLEET_SERVICE, NOTIFICATION_SERVICE, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, UserContext, VehicleReleasedEvent } from '@app/contracts';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GeofenceViolation } from '@app/contracts';
+import { firstValueFrom } from 'rxjs';
 
+interface GeofenceRow {
+  id: string;
+  name: string;
+  geometry: { type: string, coordinates: number[][][] }
+}
 @Injectable()
 export class TelemetryService {
 
   private _logger = new Logger(TelemetryService.name);
   
-  constructor(private _prismaService: PrismaService, @Inject(NOTIFICATION_SERVICE) private _clientNotification: ClientProxy) {}
+  constructor(private _prismaService: PrismaService, @Inject(NOTIFICATION_SERVICE) private _clientNotification: ClientProxy,
+    @Inject(FLEET_SERVICE) private _clientFleet: ClientProxy) {}
 
   async createGeofenceForCompany({ user, data }: RpcRequest<CreateGeofenceDto>) {
     
@@ -53,6 +60,47 @@ export class TelemetryService {
     return {
       success: true
     }
+  }
+
+  async getGeofences(data: UserContext) {
+    const rows = await this._prismaService.$queryRaw<GeofenceRow[]>`
+      SELECT id, name, ST_AsGeoJSON(polygon)::json AS geometry
+      FROM "Geofence"
+      WHERE "companyId" = ${data.companyId}
+      ORDER BY name
+    `;
+
+    return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        points: row.geometry.coordinates[0]
+          .slice(0, -1)
+          .map(([lng, lat]) => ({ lat, lng }))
+      })
+    );
+  }
+
+  async getCurrentvehiclesLocations(data: UserContext) {
+    const vehiclesId = await firstValueFrom(this._clientFleet.send<string[]>(FLEET_PATTERNS.GET_COMPANY_VEHICLE_IDS, { data }));
+
+    if (vehiclesId.length === 0) {
+      throw new RpcException({
+        code: ERROR_CODES.VEHICLE_NOT_FOUND,
+        message: 'The company has no vehicles'
+      });
+    }
+
+    return this._prismaService.$queryRaw`
+      SELECT DISTINCT ON ("vehicleId")
+        "vehicleId",
+        speed,
+        "timestamp",
+        ST_Y(location) AS lat,
+        ST_X(location) AS lng
+      FROM "VehicleLocation"
+      WHERE "vehicleId" = ANY(${vehiclesId}::text[])
+      ORDER BY "vehicleId", "timestamp" DESC      
+    `
   }
 
   async handleSaveLocation({user, data}: RpcRequest<SaveLocationDto>) {

@@ -128,6 +128,22 @@ export class VehicleService {
     });
   }
 
+  async getCompanyVehicleIds(user: UserContext) {
+    const vehicles = await this._prismaService.vehicle.findMany({
+      where: {
+        companyId: user.companyId,
+        status: {
+          in: [StatusVehicle.ACTIVE, StatusVehicle.MAINTENANCE]    
+        } 
+      },
+      select: {
+        id: true
+      }
+    });
+
+    return vehicles.map((v) => v.id);
+  }
+
   async checkVehicleStatus(data: { companyId: string, vehicleId: string }) {
     const vehicle = await this._prismaService.vehicle.findUnique({
       where: {

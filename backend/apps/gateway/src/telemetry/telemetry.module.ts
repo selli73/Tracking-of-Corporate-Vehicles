@@ -4,6 +4,7 @@ import { TelemetryController } from './telemetry.controller.js';
 import { TELEMETRY_SERVICE } from '@app/contracts';
 import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { FleetMapModule } from '../fleet-map/fleet-map.module.js';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           },
         }),
       },
-    ])
+    ]),
+    FleetMapModule
   ],
   controllers: [TelemetryController],
   providers: [TelemetryService],

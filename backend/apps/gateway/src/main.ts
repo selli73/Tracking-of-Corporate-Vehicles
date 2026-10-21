@@ -5,9 +5,11 @@ import { AllExceptionsFilter } from './filters/all-exceptions.filter';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { QUEUES } from '@app/contracts';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CorrelationIdInterceptor } from './correlation.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
+  app.useGlobalInterceptors(new CorrelationIdInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
