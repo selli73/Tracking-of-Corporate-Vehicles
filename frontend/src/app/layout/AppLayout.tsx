@@ -15,6 +15,7 @@ const MENU: MenuItem[] = [
     { to: '/users', label: 'Пользователи', roles: ACCESS.users },
     { to: '/tariffs', label: 'Тарифы', roles: ACCESS.tariffs },
     { to: '/map', label: 'Карта', roles: ACCESS.map },
+    { to: '/invoices', label: 'Счета', roles: ACCESS.invoices },
 ];
 
 export const AppLayout = observer(() => {

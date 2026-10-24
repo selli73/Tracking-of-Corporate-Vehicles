@@ -59,7 +59,7 @@ export class CompanyService {
       if (
         typeof error === 'object' &&
         error !== null &&
-        error.sqlState === '23505'
+        error.code === 'P2002'
       ) {
         throw new RpcException({
           code: ERROR_CODES.COMPANY_OR_OWNER_ALREADY_EXISTS,

@@ -1,6 +1,6 @@
 import type { LoadStatus } from "@/shared/lib/loadStatus";
 import { geofencesApi } from "./api";
-import type { Geofence } from "./types";
+import type { CreateGeofenceDto, Geofence } from "./types";
 import { makeAutoObservable } from "mobx";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 
@@ -22,6 +22,11 @@ class GeofenceStore {
         } catch(error) {
             this.setError(getErrorMessage(error, 'Не удалось загрузить геозоны'));
         }
+    }
+
+    async create(dto: CreateGeofenceDto) {
+        await geofencesApi.create(dto);
+        this.setItems(await geofencesApi.getAll());        
     }
 
     setItems(items: Geofence[]) {        

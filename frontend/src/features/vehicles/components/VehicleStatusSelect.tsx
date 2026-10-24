@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { VEHICLE_STATUS_LABEL, type Vehicle, type VehicleStatus } from "../types";
-import { vehicleStore } from "../store";
+import { vehiclesStore } from "../store";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 
 const STATUSES = Object.keys(VEHICLE_STATUS_LABEL) as VehicleStatus[];
@@ -29,7 +29,7 @@ export const VehicleStatusSelect = ({ vehicle }: VehicleStatusSelectProps) => {
         setIsSaving(true);
 
         try {
-            await vehicleStore.updateStatus(vehicle.id, next);
+            await vehiclesStore.updateStatus(vehicle.id, next);
         } catch (err) {
             setError(getErrorMessage(err, 'Не удалось изменить статус'));
         } finally {

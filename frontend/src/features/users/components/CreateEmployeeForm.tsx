@@ -1,6 +1,6 @@
 import { ROLE_LABEL, type CreatableRole } from "@/features/auth";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { userStore } from "../store";
+import { usersStore } from "../store";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 import type { CreateEmployeeDto } from "../types";
 
@@ -61,7 +61,7 @@ export const CreateEmployeeForm = ({ roles, onSuccess, onCancel }: CreateEmploye
         }
 
         try {
-            await userStore.create(role, dto);
+            await usersStore.create(role, dto);
             onSuccess();
         } catch (error) {
             setError(getErrorMessage(error, 'Не удалось создать сотрудника'));

@@ -19,8 +19,4 @@ export class SaveLocationDto {
     @Max(500)
     @ApiProperty({ description: 'Vehicle speed', example: '60' })
     speed: number; 
-
-    @IsDateString()
-    @ApiProperty({ description: 'Location transmission time', example: 'jonJones@gmail.com' })
-    timestamp: string
 }

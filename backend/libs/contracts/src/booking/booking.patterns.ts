@@ -5,7 +5,9 @@ export const BOOKING_PATTERNS = {
   CREATE_BOOKING: 'booking.create',
   CREATED_BOOKING: 'booking.created',
   
+  CHECK_DRIVER_STATUS: 'booking.check-driver-status',
   GET_BOOKINGS: 'get-bookings',
+  GET_ACTIVE_BOOKING: 'get-active-booking',
 
   START_BOOKING: 'start-booking',
   FINISH_BOOKING: 'finish-booking',

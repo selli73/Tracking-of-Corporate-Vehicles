@@ -21,3 +21,23 @@ export interface LoginDto {
 export interface LoginResponse {
     access_token: string
 }
+
+export interface CompanyInfo {
+  officialName: string;
+  shortName: string;
+  tin: string;
+  registeredAddress: string;
+  actualAddress?: string; 
+  phone: string;
+  companyEmail: string;
+}
+
+export interface OwnerInfo extends LoginDto {
+  name: string;
+  surname: string;
+}
+
+export interface RegisterCompanyDto {
+  company: CompanyInfo;
+  owner: OwnerInfo;
+}

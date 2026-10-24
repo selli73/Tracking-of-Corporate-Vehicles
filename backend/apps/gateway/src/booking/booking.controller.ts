@@ -28,6 +28,12 @@ export class BookingController {
     return this._bookingService.getBookings(req.user);
   }
 
+  @Get('get-active-booking')
+  @Roles(Role.DRIVER)
+  getActiveBookingDriver(@Req() req: IJwtUserRequest) {
+    return this._bookingService.getActiveBookingDriver(req.user);
+  }
+
   @Patch(':id/start')
   @Roles(Role.OWNER, Role.COMPANY_ADMIN, Role.MANAGER)
   @ApiOperation({ summary: 'Start the trip' }) @ApiResponse({ status: 200, description: 'The trip got off to a successful start' })

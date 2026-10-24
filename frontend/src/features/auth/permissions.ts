@@ -14,6 +14,9 @@ export const ACCESS = {
     users: ['OWNER', 'COMPANY_ADMIN', 'MANAGER'],
     tariffs: ['OWNER', 'COMPANY_ADMIN'],
     map: ['OWNER', 'COMPANY_ADMIN', 'MANAGER'],
+    geofencesManage: ['OWNER', 'COMPANY_ADMIN'],
+    invoices: ['OWNER', 'COMPANY_ADMIN', 'MANAGER', 'DRIVER'],
+    invoicesPay: ['OWNER', 'COMPANY_ADMIN', 'MANAGER', 'DRIVER'],
 } satisfies Record<string, readonly Role[]>;
 
 export type CreatableRole = Exclude<Role, 'OWNER'>;

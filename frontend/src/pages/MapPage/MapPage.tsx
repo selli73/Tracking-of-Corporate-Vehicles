@@ -1,6 +1,7 @@
-import { GeofencePolygon, geofenceStore } from "@/features/geofences";
+import { ACCESS, authStore } from "@/features/auth";
+import { GeofenceDraftLayer, GeofenceDraftPanel, GeofencePolygon, geofenceStore, useGeofenceDraft } from "@/features/geofences";
 import { vehicleLocationStore, VehicleMarkers } from "@/features/vehicle-locations";
-import { vehicleStore } from "@/features/vehicles";
+import { vehiclesStore } from "@/features/vehicles";
 import type { LoadStatus } from "@/shared/lib/loadStatus";
 import { BaseMap } from "@/shared/ui/map/BaseMap"
 import { FitBounds } from "@/shared/ui/map/FitBounds";
@@ -8,14 +9,17 @@ import type { LatLngTuple } from "leaflet";
 import { observer } from "mobx-react-lite"
 import { useEffect } from "react";
 
-const REFRESH_INTERVAL_MS = 10_000;
+const REFRESH_INTERVAL_MS = 2_000;
 
 const isSettled = (status: LoadStatus) => status === 'success' || status === 'error';
 
 export const MapPage = observer(() => {    
+    const draft = useGeofenceDraft();
+    const canManageGeofences = authStore.hasAnyRole(ACCESS.geofencesManage);
+
     useEffect(() => {
         vehicleLocationStore.load();
-        vehicleStore.load();
+        vehiclesStore.load();
         geofenceStore.load();
 
         const intervalId = window.setInterval(() => {
@@ -25,7 +29,7 @@ export const MapPage = observer(() => {
         return () => window.clearInterval(intervalId);
     }, []);
 
-    const vehicleById = new Map(vehicleStore.items.map((v) => [v.id, v]));
+    const vehicleById = new Map(vehiclesStore.items.map((v) => [v.id, v]));
     const locations = vehicleLocationStore.items;
     const geofences = geofenceStore.items;
     
@@ -41,6 +45,7 @@ export const MapPage = observer(() => {
     return (
         <div>
             <h1>Карта</h1>
+            {canManageGeofences && <GeofenceDraftPanel draft={draft} />}
 
             {vehicleLocationStore.status === 'loading' && <p>Загружаем машины…</p>}
             
@@ -58,9 +63,10 @@ export const MapPage = observer(() => {
                 </p>
             )}           
 
-            <BaseMap height="calc(100vh - 180px)">
+            <BaseMap height="calc(100vh - 220px)">
                 <GeofencePolygon geofences={geofences} />
                 <VehicleMarkers locations={locations} vehicleById={vehicleById} />
+                <GeofenceDraftLayer draft={draft} />
                 <FitBounds points={points} />
             </BaseMap>
         </div>

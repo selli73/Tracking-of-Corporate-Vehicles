@@ -13,7 +13,6 @@ export const VehicleMarkers = ({ locations, vehicleById }: VehicleMarkersProps) 
             {
                 locations.map((location) => {
                     const vehicle = vehicleById.get(location.vehicleId);
-                    console.log(vehicle)
                     return (
                         <Marker key={location.vehicleId} position={[location.lat, location.lng]}>
                             <Popup>

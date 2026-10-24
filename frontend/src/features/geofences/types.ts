@@ -8,3 +8,8 @@ export interface Geofence {
     name: string;
     points: GeoPoint[];
 }
+
+export interface CreateGeofenceDto {
+    name: string;
+    polygon: GeoPoint[];
+}

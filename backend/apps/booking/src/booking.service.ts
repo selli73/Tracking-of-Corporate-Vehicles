@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { BOOKING_EVENTS_CLIENT, BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, PaymentDto, RpcRequest } from '@app/contracts';
+import { BOOKING_EVENTS_CLIENT, BOOKING_PATTERNS, CreateBookingDto, ERROR_CODES, FLEET_PATTERNS, isRpcErrorPayload, PaymentDto, RpcRequest, UserContext } from '@app/contracts';
 import { BookingStatus } from '@prisma/client-booking';
 import { VehicleReleasedEvent } from '@app/contracts';
 import { VehicleStartedEvent } from './events/vehicleStarted';
@@ -98,6 +98,15 @@ export class BookingService {
     });
   }
 
+  async getActiveBookingDriver(user: UserContext) {
+    return this._prismaService.booking.findFirst({
+      where: {
+        driverId: user.userId,
+        status: BookingStatus.ACTIVE
+      }
+    });
+  }
+
   async start(bookingId: string, companyId: string) {
     const booking = await this._prismaService.booking.findUnique({
       where: {
@@ -182,7 +191,7 @@ export class BookingService {
       }
     });
 
-    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.id, booking.vehicleId, finishedBooking.driverId, finishedBooking.driverEmail,
+    this._bookingEventsClient.emit(BOOKING_PATTERNS.BOOKING_FINISHED, new VehicleReleasedEvent(booking.id, finishedBooking.companyId,booking.vehicleId, finishedBooking.driverId, finishedBooking.driverEmail,
       finishedBooking.recorderId, finishedBooking.startDate.toISOString(), finishedBooking.finishedAt? finishedBooking.finishedAt.toISOString() : 'empty'));
 
     return finishedBooking;
@@ -244,24 +253,51 @@ export class BookingService {
   }
 
   async paymentFailed(data: PaymentDto) {
-    const bookingUpdate = await this._prismaService.booking.findUnique({
+    const { count } = await this._prismaService.booking.updateMany({
       where: {
-        id: data.bookingId
-      }
-    });
+        id: data.bookingId,
+        status: {
+          in: [BookingStatus.COMPLETED, BookingStatus.DEBT]
+        }
+      },
+      data: { status: BookingStatus.DEBT },
+    });    
 
-    if (!bookingUpdate) {
-      this._logger.log(`Booking by ID: ${data.bookingId} not found`);
-      return;
-    }
+    if (count === 0) {
+      this._logger.warn(`Booking ${data.bookingId}: not found or not completed, DEBT not set`);
+    }    
+  }
 
-    await this._prismaService.booking.update({
+  async paymentSuccess(data: PaymentDto) {
+    await this._prismaService.booking.updateMany({
       where: {
-        id: data.bookingId
+        id: data.bookingId,
+        status: BookingStatus.DEBT
       },
       data: {
-        status: BookingStatus.DEBT
+        status: BookingStatus.COMPLETED
       }
     });
+  }
+
+  async checkDriverStatus(data: { vehicleId: string, driverId: string }) {
+    const booking = await this._prismaService.booking.findFirst({
+      where: {
+        vehicleId: data.vehicleId,
+        driverId: data.driverId,
+        status: BookingStatus.ACTIVE
+      }
+    });
+
+    if (!booking) {
+      throw new RpcException({
+        code: ERROR_CODES.BOOKING_NOT_FOUND,
+        message: 'Booking not found'
+      });
+    }
+
+    return {
+      success: true
+    };
   }
 }

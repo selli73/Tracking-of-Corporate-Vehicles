@@ -23,6 +23,17 @@ async function bootstrap() {
     }
   });
 
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [url],
+      queue: QUEUES.BILLING,
+      queueOptions: {
+        durable: true
+      }
+    }
+  })
+
   await app.startAllMicroservices();
   await app.init();
 

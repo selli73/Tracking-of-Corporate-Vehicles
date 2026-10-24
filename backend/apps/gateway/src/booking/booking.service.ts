@@ -30,6 +30,12 @@ export class BookingService {
     return response;
   }
 
+  async getActiveBookingDriver(user: UserContext) {
+    const response = await firstValueFrom(this._clientBooking.send<unknown, UserContext>(BOOKING_PATTERNS.GET_ACTIVE_BOOKING, user));
+
+    return response;
+  }
+
   async start(bookingId: string, userContext: UserContext) {
     const response = await firstValueFrom(this._clientBooking.send<unknown, ChangeStatusBooking>(BOOKING_PATTERNS.START_BOOKING, 
       { 

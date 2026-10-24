@@ -31,6 +31,7 @@
     "telemetry:migrate:reset": "prisma migrate reset --config apps/telemetry/prisma7.config.ts",
     "billing:generate": "prisma generate --schema apps/billing/prisma/schema.prisma",
     "billing:migrate": "prisma migrate dev --config apps/billing/prisma7.config.ts",
+    "billing:migrate:reset": "prisma migrate reset --config apps/billing/prisma7.config.ts",
     "notification:generate": "prisma generate --schema apps/notification/prisma/schema.prisma",
     "notification:migrate": "prisma migrate dev --config apps/notification/prisma7.config.ts"
   },

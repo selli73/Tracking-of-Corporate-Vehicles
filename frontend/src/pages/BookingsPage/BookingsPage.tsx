@@ -1,7 +1,7 @@
 import { ACCESS, authStore } from "@/features/auth";
 import { BOOKING_STATUS_LABEL, bookingStore, BookingTable, type BookingStatus } from "@/features/bookings";
-import { userStore } from "@/features/users";
-import { vehicleStore } from "@/features/vehicles";
+import { usersStore } from "@/features/users";
+import { vehiclesStore } from "@/features/vehicles";
 import { LoadState } from "@/shared/ui/LoadState";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -15,14 +15,14 @@ export const BookingsPage = observer(() => {
 
     useEffect(() => {
         void bookingStore.load();
-        void vehicleStore.load();
+        void vehiclesStore.load();
         if (showDriver) {
-            void userStore.load();
+            void usersStore.load();
         }
     }, [showDriver]);
 
-    const vehicleById = new Map(vehicleStore.items.map((v) => [v.id, v]));
-    const driverById = new Map(userStore.items.map((u) => [u.id, u]));
+    const vehicleById = new Map(vehiclesStore.items.map((v) => [v.id, v]));
+    const driverById = new Map(usersStore.items.map((u) => [u.id, u]));
 
     const visibleBookings = bookingStore.items
         .filter((b) => statusFilter === 'ALL' || b.status === statusFilter)

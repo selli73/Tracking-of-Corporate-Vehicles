@@ -5,7 +5,7 @@ import { usersApi } from "./api";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 import type { CreatableRole } from "../auth";
 
-class UserStore {
+class UsersStore {
     items: Employee[] = [];
     status: LoadStatus = 'idle';
     error: string | null = null;
@@ -46,4 +46,4 @@ class UserStore {
     }
 }
 
-export const userStore = new UserStore();
+export const usersStore = new UsersStore();

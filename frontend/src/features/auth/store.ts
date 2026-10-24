@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import type { CurrentUser, LoginDto, Role } from "./types";
+import type { CurrentUser, LoginDto, RegisterCompanyDto, Role } from "./types";
 import { authApi } from "./api";
 import { tokenStorage } from "@/shared/api/token";
 import { isApiError } from "@/shared/api/ApiError";
@@ -49,6 +49,13 @@ class AuthStore {
         const { access_token } = await authApi.login(dto);
         tokenStorage.set(access_token);
 
+        const user = await authApi.me();
+        this.setUser(user);
+    }
+
+    async registerCompany(dto: RegisterCompanyDto) {
+        const { access_token } = await authApi.registerCompany(dto);
+        tokenStorage.set(access_token);
         const user = await authApi.me();
         this.setUser(user);
     }

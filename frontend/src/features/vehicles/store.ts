@@ -4,7 +4,7 @@ import type { CreateVehicleDto, Vehicle, VehicleStatus } from "./types";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 import { vehicleApi } from "./api";
 
-class VehicleStore {
+class VehiclesStore {
     
     items: Vehicle[] = [];
     status: LoadStatus = 'idle';
@@ -65,4 +65,4 @@ class VehicleStore {
     }
 }
 
-export const vehicleStore =  new VehicleStore();
+export const vehiclesStore =  new VehiclesStore();

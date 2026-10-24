@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
-import { CreateGeofenceDto, ERROR_CODES, FLEET_PATTERNS, FLEET_SERVICE, NOTIFICATION_SERVICE, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, UserContext, VehicleReleasedEvent } from '@app/contracts';
+import { BOOKING_PATTERNS, BOOKING_SERVICE, CreateGeofenceDto, ERROR_CODES, FLEET_PATTERNS, FLEET_SERVICE, NOTIFICATION_SERVICE, RpcRequest, SaveLocationDto, TELEMETRY_PATTERNS, UserContext, VehicleReleasedEvent } from '@app/contracts';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { GeofenceViolation } from '@app/contracts';
 import { firstValueFrom } from 'rxjs';
@@ -16,7 +16,7 @@ export class TelemetryService {
   private _logger = new Logger(TelemetryService.name);
   
   constructor(private _prismaService: PrismaService, @Inject(NOTIFICATION_SERVICE) private _clientNotification: ClientProxy,
-    @Inject(FLEET_SERVICE) private _clientFleet: ClientProxy) {}
+    @Inject(FLEET_SERVICE) private _clientFleet: ClientProxy, @Inject(BOOKING_SERVICE) private _clientBooking: ClientProxy) {}
 
   async createGeofenceForCompany({ user, data }: RpcRequest<CreateGeofenceDto>) {
     
@@ -32,7 +32,7 @@ export class TelemetryService {
     if (existPolygon) {
       throw new RpcException({
         code: ERROR_CODES.GEOFENCE_UNIQUENESS_VIOLATION,
-        message: 'A geofence has already been created for your company'
+        message: 'Use a unique name for the company geofence.'
       });
     }
 
@@ -59,7 +59,7 @@ export class TelemetryService {
 
     return {
       success: true
-    }
+    };
   }
 
   async getGeofences(data: UserContext) {
@@ -80,8 +80,8 @@ export class TelemetryService {
     );
   }
 
-  async getCurrentvehiclesLocations(data: UserContext) {
-    const vehiclesId = await firstValueFrom(this._clientFleet.send<string[]>(FLEET_PATTERNS.GET_COMPANY_VEHICLE_IDS, { data }));
+  async getCurrentvehiclesLocations(user: UserContext) {
+    const vehiclesId = await firstValueFrom(this._clientFleet.send<string[]>(FLEET_PATTERNS.GET_COMPANY_VEHICLE_IDS, { ...user }));
 
     if (vehiclesId.length === 0) {
       throw new RpcException({
@@ -104,13 +104,17 @@ export class TelemetryService {
   }
 
   async handleSaveLocation({user, data}: RpcRequest<SaveLocationDto>) {
+    await firstValueFrom(this._clientBooking.send(BOOKING_PATTERNS.CHECK_DRIVER_STATUS, { vehicleId: data.vehicleId, driverId: user.userId }));
+    this._logger.log(`Автомобиль ${data.vehicleId} передвинулся по lat ${data.lat} по lng ${data.lng}`);
+    const now = new Date();
+
     await this._prismaService.$executeRaw`
       INSERT INTO "VehicleLocation" ("id", "vehicleId", "speed", "timestamp", "location", "createdAt")
       VALUES (
         gen_random_uuid(),
         ${data.vehicleId},
         ${data.speed},
-        ${new Date(data.timestamp)},
+        ${now},
         ST_SetSRID(ST_MakePoint(${data.lng}, ${data.lat}), 4326),
         NOW()
       )
@@ -132,7 +136,7 @@ export class TelemetryService {
     if (row.total > 0n && row.inside === 0n) {
       this._clientNotification.emit(
         TELEMETRY_PATTERNS.GEOFENCE_VIOLATION,
-        new GeofenceViolation(data.vehicleId, data.timestamp),
+        new GeofenceViolation(data.vehicleId, now.toDateString()),
       );
     }
   }

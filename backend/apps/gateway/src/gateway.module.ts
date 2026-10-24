@@ -12,6 +12,7 @@ import { TelemetryModule } from './telemetry/telemetry.module.js';
 import { AlertsController } from './alerts/alerts.controller.js';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FleetMapModule } from './fleet-map/fleet-map.module.js';
+import { BillingModule } from './billing/billing.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { FleetMapModule } from './fleet-map/fleet-map.module.js';
     BookingModule,
     TelemetryModule,
     FleetMapModule,
+    BillingModule,
   ],
   controllers: [VehiclesController, AlertsController],
   providers: [VehiclesService],

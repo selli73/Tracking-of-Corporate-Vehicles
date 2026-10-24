@@ -18,3 +18,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
 
 export const formatDateTime = (value: string) => dateTimeFormatter.format(new Date(value));
 
+export function formatDuration(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${minutes} мин`;
+  if (minutes === 0) return `${hours} ч`;
+  return `${hours} ч ${minutes} мин`;
+}

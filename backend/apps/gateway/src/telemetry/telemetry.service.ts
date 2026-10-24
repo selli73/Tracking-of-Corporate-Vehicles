@@ -35,7 +35,7 @@ export class TelemetryService {
     }   
 
    async getCurrentvehiclesLocations(user: UserContext) {
-        const response = await firstValueFrom(this._clientTelemetry.send<any, RpcRequest<null>>(TELEMETRY_PATTERNS.GET_CURRENT_LOCATIONS, { user, data: null })
+        const response = await firstValueFrom(this._clientTelemetry.send<any, UserContext>(TELEMETRY_PATTERNS.GET_CURRENT_LOCATIONS, { ...user })
             .pipe(timeout(4000)));
 
         return response;

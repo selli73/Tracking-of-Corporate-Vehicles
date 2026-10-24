@@ -2,6 +2,7 @@ import { formatDateTime } from "@/shared/lib/format";
 import { BOOKING_STATUS_LABEL, type Booking, type DriverInfo, type VehicleInfo } from "../types";
 import { observer } from "mobx-react-lite";
 import { BookingActions } from "./BookingActions";
+import { Link } from "react-router";
 
 interface BookingTableProps {
     bookings: Booking[];
@@ -37,7 +38,14 @@ export const BookingTable = observer(({ bookings, vehicleById, driverById, showD
                             {vehicle ? `${vehicle.licensePlate} · ${vehicle.brand} ${vehicle.model}` : '—'}
                         </td>
                         {showDriver && <td>{driver ? `${driver.surname} ${driver.name}` : '—'}</td>}
-                        <td>{BOOKING_STATUS_LABEL[b.status]}</td>
+                        <td>
+                          {BOOKING_STATUS_LABEL[b.status]}
+                            {b.status === 'DEBT' && (
+                                <div>
+                                    <Link to="/invoices">Оплатить счёт</Link>
+                                </div>
+                            )}
+                        </td>
                         {canManage && (
                             <td>
                                 <BookingActions booking={b} />

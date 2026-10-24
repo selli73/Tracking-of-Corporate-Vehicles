@@ -7,3 +7,4 @@ export { RequireRole } from './components/RequireRole';
 export { ACCESS } from './permissions';
 export { ROLE_LABEL } from './roles';
 export type { CreatableRole } from './permissions';
+export { RegisterCompanyForm } from './components/RegisterCompanyForm';

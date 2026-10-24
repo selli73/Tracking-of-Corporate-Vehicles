@@ -13,6 +13,7 @@ export const QUEUES = {
 
     TELEMETRY: 'telemetry_queue',
 
+    BILLING: 'billing_queue',
     BILLING_EVENTS: 'billing_events_queue',
     ALERTS: 'alerts_queue',
 

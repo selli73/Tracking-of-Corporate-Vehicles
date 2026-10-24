@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { BookingService } from './booking.service.js';
 import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import { BILLING_PATTERNS, BOOKING_PATTERNS, CreateBookingDto } from '@app/contracts';
-import type { ChangeStatusBooking, RpcRequest } from '@app/contracts';
+import type { ChangeStatusBooking, RpcRequest, UserContext } from '@app/contracts';
 import { PaymentDto } from '@app/contracts';
 
 @Controller()
@@ -17,6 +17,11 @@ export class BookingController {
   @MessagePattern(BOOKING_PATTERNS.GET_BOOKINGS)
   getBookings(@Payload() dto: RpcRequest<null>) {
     return this._bookingService.getBookings(dto);
+  }
+
+  @MessagePattern(BOOKING_PATTERNS.GET_ACTIVE_BOOKING)
+  getActiveBookingDriver(@Payload() dto: UserContext) {
+    return this._bookingService.getActiveBookingDriver(dto);
   }
 
   @MessagePattern(BOOKING_PATTERNS.START_BOOKING)
@@ -34,8 +39,18 @@ export class BookingController {
     return this._bookingService.cancel(dto.data.bookingId, dto.user.companyId);
   }
 
+  @EventPattern(BILLING_PATTERNS.PAYMENT_SUCCESS)
+  paymentSuccess(@Payload() dto: PaymentDto) {
+    return this._bookingService.paymentSuccess(dto);
+  }
+
   @EventPattern(BILLING_PATTERNS.PAYMENT_FAILED)
   paymentFailed(@Payload() dto: PaymentDto) {
     return this._bookingService.paymentFailed(dto);
+  }
+
+  @MessagePattern(BOOKING_PATTERNS.CHECK_DRIVER_STATUS)
+  checkDriverStatus(@Payload() dto: { vehicleId: string, driverId: string }) {
+    return this._bookingService.checkDriverStatus(dto);
   }
 }

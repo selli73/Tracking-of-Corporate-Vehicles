@@ -14,14 +14,22 @@ datasource db {
 
 model Invoice {
   id String @id @default(uuid())
-  bookingId String 
+  bookingId String @unique
+  companyId String  
   driverId String
-  amount Int
+  driverEmail String
+  vehicleId String
+  durationMinutes Int
+  distanceKm Decimal @db.Decimal(10, 2)
+  minuteRate Decimal @db.Decimal(10, 2)
+  kmRate Decimal @db.Decimal(10, 2)
+  amount Decimal @db.Decimal(12, 2)
   status InvoiceStatus @default(PENDING)
+  paidAt DateTime?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  
 
-  @@index([bookingId])
+  @@index([companyId, createdAt])
   @@index([driverId])
 }
 

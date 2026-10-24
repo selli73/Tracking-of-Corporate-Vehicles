@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { getErrorMessage } from '@/shared/api/getErrorMessage';
-import { vehicleStore } from '../store';
+import { vehiclesStore } from '../store';
 import type { TariffOption } from '../types'; // НОВОЕ
 
 
@@ -36,7 +36,7 @@ export function CreateVehicleForm({ tariffs, onSuccess }: CreateVehicleFormProps
     setIsSubmitting(true);
 
     try {
-      await vehicleStore.create({
+      await vehiclesStore.create({
         brand: values.brand.trim(),
         model: values.model.trim(),
         vin: values.vin.trim().toUpperCase(),

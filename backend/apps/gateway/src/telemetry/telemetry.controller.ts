@@ -30,6 +30,7 @@ export class TelemetryController {
 
   @Post('saveLocation')
   @ApiOperation({ summary: 'Save the vehicle current location'}) @ApiResponse({ status: 201, description: 'Current vehicle location saved' })
+  @Roles(Role.DRIVER)
   saveLocation(@Req() req: IJwtUserRequest, @Body() dto: SaveLocationDto) {
     return this._telemetryService.saveLocation(req.user, dto);
   }

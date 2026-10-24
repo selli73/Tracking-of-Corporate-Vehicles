@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import type { TariffOption, Vehicle } from "../types";
-import { vehicleStore } from "../store";
+import { vehiclesStore } from "../store";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 
 interface VehicleTariffSelectProps {
@@ -21,7 +21,7 @@ export const VehicleTariffSelect = ({ vehicle, tariffs }: VehicleTariffSelectPro
         setIsSaving(true);
 
         try {
-            await vehicleStore.linkTariffToVehicle(vehicle.id, value === '' ? null : value);
+            await vehiclesStore.linkTariffToVehicle(vehicle.id, value === '' ? null : value);
         } catch (error) {
             setError(getErrorMessage(error, 'Не удалось сменить тариф'));
         } finally {
