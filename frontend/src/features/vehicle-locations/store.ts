@@ -4,6 +4,11 @@ import type { LoadStatus } from "@/shared/lib/loadStatus";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 import { vehicleLocationsApi } from "./api";
 
+
+function isNewer(a: VehicleLocation, b: VehicleLocation) {
+    return Date.parse(a.timestamp) > Date.parse(b.timestamp);
+}
+
 class VehicleLocationStore {    
     items: VehicleLocation[] = []
     status: LoadStatus = 'idle';
@@ -38,8 +43,33 @@ class VehicleLocationStore {
 
     }
 
+    upsert(location: VehicleLocation) {
+        const index = this.items.findIndex((item) => item.vehicleId === location.vehicleId);
+
+        if (index === -1) {
+            this.items.push(location);
+        } else if (isNewer(location, this.items[index])) {
+            this.items[index] = location;
+        }
+        // иначе пришла старая точка — пропускаем
+    }
+
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+        this.isRefreshing = false;
+    }
+
     setAll(items: VehicleLocation[]) {
-        this.items = items;
+
+        const current = new Map(this.items.map((item) => [item.vehicleId, item]))
+
+        this.items = items.map((fresh) => {
+            const existing = current.get(fresh.vehicleId);
+            return existing && isNewer(existing, fresh) ? existing : fresh;
+        });
+
         this.status = 'success';
         this.error = null;
     }

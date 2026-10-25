@@ -1,1 +1,1 @@
-console.log(new Date().toDateString())
+console.log(new Date())

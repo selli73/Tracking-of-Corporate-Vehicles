@@ -2,7 +2,8 @@ import { isApiError } from "@/shared/api/ApiError";
 import { getErrorMessage } from "@/shared/api/getErrorMessage";
 
 const REGISTER_ERROR_TEXT: Record<string, string> = {
-  COMPANY_OR_OWNER_ALREADY_EXISTS: 'Пользователь или компания с такими данными существует',
+  COMPANY_OR_OWNER_ALREADY_EXISTS:
+    'Компания с таким ИНН, названием компании или пользователь с такой почтой уже зарегистрированы',
 };
 
 export function getRegisterErrorMessage(error: unknown, fallback?: string): string {

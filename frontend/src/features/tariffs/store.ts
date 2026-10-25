@@ -31,6 +31,12 @@ class TariffStore {
         return tariff;
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
+
     setItems(items: Tariff[]) {
         this.items = items;
         this.status = 'success';

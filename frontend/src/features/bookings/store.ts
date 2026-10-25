@@ -45,6 +45,12 @@ class BookingStore {
         this.replaceItem(updated);
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
+
     setItems(items: Booking[]) {
         this.items = items;
         this.status = 'success';

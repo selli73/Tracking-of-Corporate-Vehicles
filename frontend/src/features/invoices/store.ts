@@ -30,6 +30,12 @@ class InvoiceStore {
         return updated;
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
+
     setItems(items: Invoice[]) {
         this.items = items;
         this.status = 'success';

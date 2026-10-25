@@ -106,7 +106,7 @@ export class TelemetryService {
   async handleSaveLocation({user, data}: RpcRequest<SaveLocationDto>) {
     await firstValueFrom(this._clientBooking.send(BOOKING_PATTERNS.CHECK_DRIVER_STATUS, { vehicleId: data.vehicleId, driverId: user.userId }));
     this._logger.log(`Автомобиль ${data.vehicleId} передвинулся по lat ${data.lat} по lng ${data.lng}`);
-    const now = new Date();
+    const now = new Date(data.timestamp);
 
     await this._prismaService.$executeRaw`
       INSERT INTO "VehicleLocation" ("id", "vehicleId", "speed", "timestamp", "location", "createdAt")

@@ -1,3 +1,4 @@
+import { isRpcErrorPayload } from '@app/contracts';
 import {
   ArgumentsHost,
   Catch,
@@ -7,6 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ERROR_STATUS, isKnownErrorCode } from './error-status';
 
 @Catch() // так как в скобке пусто, значит ловим все исключения.
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -19,11 +21,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     
     const { status, code, message } = this.resolve(exception);
 
-    if (status === undefined || status >= 500) {
+    if (status >= 500) {
       this._logger.error(`${request.method} ${request.url}`, exception as any);
     }
 
-    response.status(status ?? 500).json({
+    response.status(status).json({
       statusCode: status,
       code,
       path: request.url,
@@ -51,9 +53,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       };
     }
 
-    if (this.isRpcError(exception)) {
+    if (isRpcErrorPayload(exception) && isKnownErrorCode(exception.code)) {
       return {
-        status: undefined,
+        status: ERROR_STATUS[exception.code],
         code: exception.code,
         message: exception.message,
       };
@@ -64,14 +66,5 @@ export class AllExceptionsFilter implements ExceptionFilter {
       code: 'INTERNAL_ERROR',
       message: 'Внутренняя ошибка сервера',
     };
-  }
-
-  private isRpcError(error: unknown) {
-    return (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      'message' in error
-    );
   }
 }

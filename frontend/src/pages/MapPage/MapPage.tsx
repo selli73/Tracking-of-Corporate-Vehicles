@@ -1,6 +1,6 @@
 import { ACCESS, authStore } from "@/features/auth";
 import { GeofenceDraftLayer, GeofenceDraftPanel, GeofencePolygon, geofenceStore, useGeofenceDraft } from "@/features/geofences";
-import { vehicleLocationStore, VehicleMarkers } from "@/features/vehicle-locations";
+import { useLiveVehicleLocations, vehicleLocationStore, VehicleMarkers } from "@/features/vehicle-locations";
 import { vehiclesStore } from "@/features/vehicles";
 import type { LoadStatus } from "@/shared/lib/loadStatus";
 import { BaseMap } from "@/shared/ui/map/BaseMap"
@@ -9,24 +9,16 @@ import type { LatLngTuple } from "leaflet";
 import { observer } from "mobx-react-lite"
 import { useEffect } from "react";
 
-const REFRESH_INTERVAL_MS = 2_000;
-
 const isSettled = (status: LoadStatus) => status === 'success' || status === 'error';
 
 export const MapPage = observer(() => {    
     const draft = useGeofenceDraft();
+    useLiveVehicleLocations();
     const canManageGeofences = authStore.hasAnyRole(ACCESS.geofencesManage);
 
     useEffect(() => {
-        vehicleLocationStore.load();
         vehiclesStore.load();
-        geofenceStore.load();
-
-        const intervalId = window.setInterval(() => {
-            vehicleLocationStore.refresh();
-        }, REFRESH_INTERVAL_MS);
-
-        return () => window.clearInterval(intervalId);
+        geofenceStore.load();        
     }, []);
 
     const vehicleById = new Map(vehiclesStore.items.map((v) => [v.id, v]));

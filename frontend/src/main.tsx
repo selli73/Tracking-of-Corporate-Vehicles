@@ -4,8 +4,10 @@ import App from './app/App.tsx'
 import './app/styles/global.css';
 import { authStore } from './features/auth/store.ts';
 import { setUnauthorizedHandler } from './shared/api/http.ts';
+import { resetStoresOnUserChange } from './app/resetStoresOnUserChange.ts';
 
 setUnauthorizedHandler(() => authStore.logout());
+resetStoresOnUserChange()
 authStore.init();
 
 createRoot(document.getElementById('root')!).render(

@@ -41,14 +41,4 @@ export class TelemetryController {
   getCurrentvehiclesLocations(@Req() req: IJwtUserRequest) {
     return this._telemetryService.getCurrentvehiclesLocations(req.user);
   }
-
-  @Post()
-  recieveTelemetry(@Body() dto: { vehicleId: string, lat: number, lng: number, speed: number, timestamp: string }) {
-    return this._telemetryService.recieveTelemetry(dto);
-  }
-
-  @EventPattern('geofence_violation_ui')
-  handleGeofenceAlertForUI(@Payload() data: { vehicleId: string, timestamp: string }) {
-    this._telemetryService.handleGeofenceAlertForUI(data);
-  }
 }

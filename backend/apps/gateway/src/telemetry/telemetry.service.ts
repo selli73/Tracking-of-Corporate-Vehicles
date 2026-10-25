@@ -28,7 +28,16 @@ export class TelemetryService {
 
     async saveLocation(user: UserContext, data: SaveLocationDto) {
         this._clientTelemetry.emit<any, RpcRequest<SaveLocationDto>>(TELEMETRY_PATTERNS.SAVE_LOCATION, { user, data });
-
+        
+        this._fleetMapGateway.broadcastLocation('location', {
+            companyId: user.companyId,
+            vehicleId: data.vehicleId,
+            lat: data.lat,
+            lng: data.lng,
+            speed: data.speed,            
+            timestamp: data.timestamp
+        });
+        
         return {
             status: 'accepted'
         };
@@ -39,18 +48,5 @@ export class TelemetryService {
             .pipe(timeout(4000)));
 
         return response;
-    }
-
-    recieveTelemetry(data: { vehicleId: string, lat: number, lng: number, speed: number, timestamp: string }) {
-        this._clientTelemetry.emit(TELEMETRY_PATTERNS.SAVE_LOCATION, data);
-        this._fleetMapGateway.broadcastLocation(data);
-
-        return {
-            status: 'accepted'
-        };
-    }
-
-    handleGeofenceAlertForUI(data: { vehicleId: string, timestamp: string }) {
-        this._fleetMapGateway.broadcastAlert({ vehicleId: data.vehicleId, message: 'Внимание автомобиль покинул разрешенную зону', timestamp: data.timestamp });
     }
 }

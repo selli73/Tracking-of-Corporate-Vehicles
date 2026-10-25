@@ -1,0 +1,43 @@
+import { ERROR_CODES } from "@app/contracts";
+import { HttpStatus } from "@nestjs/common";
+
+export type ErrorCodeValue = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
+export const ERROR_STATUS: Record<ErrorCodeValue, HttpStatus> = {
+    COMPANY_OR_OWNER_ALREADY_EXISTS: HttpStatus.CONFLICT,
+    INCORRECT_USERNAME_OR_PASSWORD: HttpStatus.UNAUTHORIZED,
+    COMPANY_NOT_FOUND: HttpStatus.NOT_FOUND,
+
+    VEHICLE_NOT_FOUND: HttpStatus.NOT_FOUND,
+    VEHICLE_ALREADY_EXISTS: HttpStatus.CONFLICT,
+    VEHICLE_UNIQUENESS_ERROR: HttpStatus.CONFLICT,
+    VEHICLE_IS_IN_USE: HttpStatus.CONFLICT,
+    FORBIDDEN: HttpStatus.FORBIDDEN,
+    UNIQUENESS: HttpStatus.CONFLICT,
+    VALIDATION_ERROR: HttpStatus.BAD_REQUEST,
+    SERVICE_UNAVAILABLE: HttpStatus.SERVICE_UNAVAILABLE,
+    INTERNAL_ERROR: HttpStatus.INTERNAL_SERVER_ERROR,
+
+    BOOKING_OVERLAP: HttpStatus.CONFLICT,
+    INTERVAL_INVALID: HttpStatus.BAD_REQUEST,
+    START_IN_PAST: HttpStatus.BAD_REQUEST,
+    BOOKING_NOT_FOUND: HttpStatus.NOT_FOUND,
+    NOT_YOUR_RESERVATION: HttpStatus.FORBIDDEN,
+    BOOKING_NOT_STARTED: HttpStatus.CONFLICT,
+    BOOKING_NOT_COMPLETE: HttpStatus.CONFLICT,
+    BOOKING_PERIOD_EXPIRED: HttpStatus.CONFLICT,
+    CANNOT_BE_CANCELED: HttpStatus.CONFLICT,
+
+    TELEMETRY_SPEED_INCORRECT: HttpStatus.BAD_REQUEST,
+    GEOFENCE_UNIQUENESS_VIOLATION: HttpStatus.CONFLICT,
+    POLYGON_INVALID: HttpStatus.BAD_REQUEST,
+
+    INVOICE_NOT_FOUND: HttpStatus.NOT_FOUND,
+    INVOICE_ALREADY_PAID: HttpStatus.CONFLICT,
+};
+
+const KNOWN_CODES = new Set<string>(Object.keys(ERROR_STATUS));
+
+export function isKnownErrorCode(code: string): code is ErrorCodeValue {
+  return KNOWN_CODES.has(code);
+}

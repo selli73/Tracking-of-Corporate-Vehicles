@@ -31,6 +31,12 @@ class UsersStore {
         return employee;
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
+
     addItem(employee: Employee) {
         this.items.push(employee);
     }

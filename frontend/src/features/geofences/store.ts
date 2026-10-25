@@ -29,6 +29,12 @@ class GeofenceStore {
         this.setItems(await geofencesApi.getAll());        
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
+
     setItems(items: Geofence[]) {        
         this.items = items;
         this.status = 'success';

@@ -24,7 +24,6 @@ function getRandomInt(min: number, max: number) {
 const routes = [route1, route2, route3, route4];
 
 class Driver {    
-
     accessToken: string | null = null;
     currentBookingId: string | null = null;
     isTickRunning: boolean = false;
@@ -101,7 +100,8 @@ class Driver {
             vehicleId,
             lat: point.lat,
             lng: point.lng,
-            speed: getRandomInt(1, 60)
+            speed: getRandomInt(1, 60),
+            timestamp: new Date()
         });        
     }       
     

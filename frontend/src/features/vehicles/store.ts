@@ -42,6 +42,11 @@ class VehiclesStore {
         this.replaceItem(updated);
     }
 
+    reset() {
+        this.items = [];
+        this.status = 'idle';
+        this.error = null;
+    }
 
     addItem(vehicle: Vehicle) {
         this.items.push(vehicle);        

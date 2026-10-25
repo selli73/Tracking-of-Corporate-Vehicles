@@ -78,7 +78,10 @@ export class CompanyService {
     });
 
     if (!company) {
-        throw new RpcException('The company does not exist');
+        throw new RpcException({
+          code: ERROR_CODES.COMPANY_NOT_FOUNT,
+          message: 'The company does not exist'
+        });
     }
 
     return company;

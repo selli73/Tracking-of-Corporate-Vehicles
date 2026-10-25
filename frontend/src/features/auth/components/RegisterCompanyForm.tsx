@@ -121,9 +121,9 @@ export const RegisterCompanyForm = () => {
                         id="tin"
                         required
                         inputMode="numeric"
-                        pattern="\d{10}"
-                        maxLength={10}
-                        title="10 цифр"
+                        pattern="\d{10}|\d{12}"
+                        maxLength={12}
+                        title="10 цифр для организации или 12 цифр для ИП"
                         value={values.tin}
                         onChange={update('tin')}
                     />

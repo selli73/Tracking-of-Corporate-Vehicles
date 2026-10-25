@@ -11,9 +11,9 @@ import { FLEET_SERVICE } from '@app/contracts';
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
+      global: true,
       useFactory: (configService: ConfigService) => {
-        return {
-          global: true,
+        return {          
           secret: configService.getOrThrow('JWT_ACCESS_SECRET'),
           signOptions: {
             expiresIn: '1d',
