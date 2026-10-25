@@ -1,43 +1,123 @@
-import { authStore, type Role } from "@/features/auth"
-import { observer } from "mobx-react-lite";
-import { NavLink, Outlet } from "react-router"
-import { ACCESS } from "@/features/auth";
+import type { ComponentType } from 'react';
+import { Link, Outlet, useLocation } from 'react-router';
+import { observer } from 'mobx-react-lite';
+import {
+  ActionIcon,
+  AppShell,
+  Box,
+  Burger,
+  Button,
+  Group,
+  NavLink,
+  Text,
+  Title,
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import {
+  IconCalendarEvent,
+  IconCar,
+  IconCoin,
+  IconFileInvoice,
+  IconLogout,
+  IconMap,
+  IconUsers,
+} from '@tabler/icons-react';
+import { ACCESS, authStore, ROLE_LABEL, type Role } from '@/features/auth';
 
 interface MenuItem {
-    to: string;
-    label: string;
-    roles: readonly Role[];
+  to: string;
+  label: string;
+  roles: readonly Role[];
+  icon: ComponentType<{ size?: number; stroke?: number }>;
 }
 
 const MENU: MenuItem[] = [
-    { to: '/vehicles', label: 'Машины', roles: ACCESS.vehicles },
-    { to: 'bookings', label: 'Брони', roles: ACCESS.bookings },
-    { to: '/users', label: 'Пользователи', roles: ACCESS.users },
-    { to: '/tariffs', label: 'Тарифы', roles: ACCESS.tariffs },
-    { to: '/map', label: 'Карта', roles: ACCESS.map },
-    { to: '/invoices', label: 'Счета', roles: ACCESS.invoices },
+  { to: '/vehicles', label: 'Машины', roles: ACCESS.vehicles, icon: IconCar },
+  { to: '/bookings', label: 'Бронирования', roles: ACCESS.bookings, icon: IconCalendarEvent },
+  { to: '/invoices', label: 'Счета', roles: ACCESS.invoices, icon: IconFileInvoice },
+  { to: '/map', label: 'Карта', roles: ACCESS.map, icon: IconMap },
+  { to: '/users', label: 'Сотрудники', roles: ACCESS.users, icon: IconUsers },
+  { to: '/tariffs', label: 'Тарифы', roles: ACCESS.tariffs, icon: IconCoin },
 ];
 
-export const AppLayout = observer(() => {
-    const visibleItems = MENU.filter((item) => authStore.hasAnyRole(item.roles));
+export const AppLayout = observer(function AppLayout() {
+  const [isMenuOpen, { toggle: toggleMenu, close: closeMenu }] = useDisclosure();
+  const location = useLocation();
+  const user = authStore.user;
 
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <nav style={{ width: 220, padding: 16, borderRight: '1px solid #ddd' }}>
-                <div>{authStore.user?.name} {authStore.user?.surname}</div>
-                <button onClick={() => authStore.logout()}>Выйти</button>
+  const items = MENU.filter((item) => authStore.hasAnyRole(item.roles));
 
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {visibleItems.map((item) => (
-                        <li key={item.to}>
-                            <NavLink to={item.to}>{item.label}</NavLink>
-                        </li>
-                    ))}
-                </ul>
-            </nav>
-            <main style={{ flex: 1, padding: 24 }}>
-                <Outlet />
-            </main>
-        </div>
-    );
+  return (
+    <AppShell
+      header={{ height: 60 }}
+      navbar={{ width: 240, breakpoint: 'sm', collapsed: { mobile: !isMenuOpen } }}
+      padding="md"
+    >
+      <AppShell.Header>
+        <Group h="100%" px="md" justify="space-between">
+          <Group gap="sm">
+            <Burger opened={isMenuOpen} onClick={toggleMenu} hiddenFrom="sm" size="sm" />
+            <Title order={4}>VehiclePark</Title>
+          </Group>
+
+          <Group gap="md">
+            {user && (
+              <Box visibleFrom="sm">
+                <Text size="sm" fw={500}>
+                  {user.name} {user.surname}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {ROLE_LABEL[user.role]}
+                </Text>
+              </Box>
+            )}
+
+            <Button
+              visibleFrom="sm"
+              variant="subtle"
+              color="gray"
+              leftSection={<IconLogout size={16} />}
+              onClick={() => authStore.logout()}
+            >
+              Выйти
+            </Button>
+
+            <ActionIcon
+              hiddenFrom="sm"
+              variant="subtle"
+              color="gray"
+              size="lg"
+              onClick={() => authStore.logout()}
+              aria-label="Выйти"
+            >
+              <IconLogout size={20} />
+            </ActionIcon>
+          </Group>
+        </Group>
+      </AppShell.Header>
+
+      <AppShell.Navbar p="sm">
+        {items.map((item) => {
+          const isActive =
+            location.pathname === item.to || location.pathname.startsWith(`${item.to}/`);
+
+          return (
+            <NavLink
+              key={item.to}
+              component={Link}
+              to={item.to}
+              label={item.label}
+              leftSection={<item.icon size={18} stroke={1.6} />}
+              active={isActive}
+              onClick={closeMenu}
+            />
+          );
+        })}
+      </AppShell.Navbar>
+
+      <AppShell.Main>
+        <Outlet />
+      </AppShell.Main>
+    </AppShell>
+  );
 });

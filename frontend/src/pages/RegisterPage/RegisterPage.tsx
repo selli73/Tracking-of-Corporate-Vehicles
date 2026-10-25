@@ -1,14 +1,24 @@
-import { RegisterCompanyForm } from "@/features/auth"
-import { Link } from "react-router"
+import { Link } from 'react-router';
+import { Anchor } from '@mantine/core';
+import { RegisterCompanyForm } from '@/features/auth';
+import { AuthCard } from '@/shared/ui/AuthCard';
 
-export const RegisterPage = () => {
-    return (
-        <div style={{ maxWidth: 480, margin: '40px auto' }}>
-            <h1>Регистрация компании</h1>
-            <RegisterCompanyForm />
-            <p>
-                Уже есть аккаунт? <Link to="/login">Войти</Link>
-            </p>
-        </div>
-    )
+export function RegisterPage() {
+  return (
+    <AuthCard
+      title="Регистрация компании"
+      subtitle="Создайте компанию и учётную запись владельца"
+      width={640}
+      footer={
+        <>
+          Уже есть аккаунт?{' '}
+          <Anchor component={Link} to="/login">
+            Войти
+          </Anchor>
+        </>
+      }
+    >
+      <RegisterCompanyForm />
+    </AuthCard>
+  );
 }

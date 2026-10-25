@@ -1,87 +1,114 @@
-import { useState } from "react";
-import type { Booking } from "../types";
-import { getBookingErrorMessage } from "../errors";
-import { bookingStore } from "../store";
-import { formatDateTime } from "@/shared/lib/format";
+import { useState } from 'react';
+import { Button, Group, Stack, Text } from '@mantine/core';
+import type { Booking } from '../types';
+import { getBookingErrorMessage } from '../errors';
+import { bookingStore } from '../store';
+import { formatDateTime } from '@/shared/lib/format';
+import { confirmAction } from '@/shared/ui/confirmAction';
+import { notifyError, notifySuccess } from '@/shared/ui/notify';
 
 interface BookingActionsProps {
   booking: Booking;
 }
 
+type Action = 'start' | 'finish' | 'cancel';
+
 export const BookingActions = ({ booking }: BookingActionsProps) => {
-    const [isPending, setIsPending] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    
-    async function run(action: () => Promise<void>, fallback: string) {
-        setError(null);
-        setIsPending(true);
-        try {
-            await action();
-        } catch (error) {
-            setError(getBookingErrorMessage(error, fallback));
-        } finally {
-            setIsPending(false);
-        }
+  const [pendingAction, setPendingAction] = useState<Action | null>(null);
+
+  const isBusy = pendingAction !== null;
+
+  async function run(name: Action, action: () => Promise<void>, success: string, fallback: string) {
+    setPendingAction(name);
+    try {
+      await action();
+      notifySuccess(success);
+    } catch (e) {
+      notifyError(getBookingErrorMessage(e, fallback));
+    } finally {
+      setPendingAction(null);
     }
+  }
 
-    function handleStart() {
-        run(() => bookingStore.start(booking.id), 'Не удалось начать поездку');
-    }
+  function handleStart() {
+    run('start', () => bookingStore.start(booking.id), 'Поездка начата', 'Не удалось начать поездку');
+  }
 
-    function handleFinish() {
-        if (!window.confirm('Завершить поездку? После этого будет рассчитана стоимость.')) {
-            return;
-        }
-        run(() => bookingStore.finish(booking.id), 'Не удалось завершить поездку');
-    }
+  async function handleFinish() {
+    const isConfirmed = await confirmAction({
+      title: 'Завершить поездку?',
+      message: 'После завершения будет рассчитана стоимость и выставлен счёт.',
+      confirmLabel: 'Завершить',
+      danger: true,
+    });
+    if (!isConfirmed) return;
 
-    function handleCancel() {
-        if (!window.confirm('Отменить бронь?')) return;
-        
-        run(() => bookingStore.cancel(booking.id), 'Не удалось отменить бронь');
-    }
+    run('finish', () => bookingStore.finish(booking.id), 'Поездка завершена', 'Не удалось завершить поездку');
+  }
 
-    const errorText = error && <span role="alert" style={{ color: 'crimson' }}> {error}</span>;
+  async function handleCancel() {
+    const isConfirmed = await confirmAction({
+      title: 'Отменить бронь?',
+      message: 'Машина снова станет доступна для бронирования на это время.',
+      confirmLabel: 'Отменить бронь',
+      danger: true,
+    });
+    if (!isConfirmed) return;
 
+    run('cancel', () => bookingStore.cancel(booking.id), 'Бронь отменена', 'Не удалось отменить бронь');
+  }
 
+  if (booking.status === 'PENDING') {
+    const now = new Date();
+    const isTooEarly = new Date(booking.startDate) > now;
+    const isExpired = new Date(booking.endDate) <= now;
 
-    if (booking.status === 'PENDING') {
-        const now = new Date();
-        const isTooEarly = new Date(booking.startDate) > now;
-        const isExpired = new Date(booking.endDate) <= now;
+    return (
+      <Stack gap={4} align="flex-start">
+        <Group gap="xs">
+          {isExpired ? (
+            <Text size="sm" c="dimmed">
+              Срок брони истёк
+            </Text>
+          ) : (
+            <Button
+              size="xs"
+              onClick={handleStart}
+              disabled={isTooEarly || (isBusy && pendingAction !== 'start')}
+              loading={pendingAction === 'start'}
+            >
+              Начать поездку
+            </Button>
+          )}
 
-        return (
-            <>
-                {isExpired ? (
-                    <span style={{ color: 'gray' }}>Срок брони истёк </span>
-                    ) : (
-                    <button
-                        onClick={handleStart}
-                        disabled={isPending || isTooEarly}
-                        title={isTooEarly ? `Можно начать с ${formatDateTime(booking.startDate)}` : undefined}
-                    >
-                        Начать поездку
-                    </button>
-                )}{' '}
-                
-                <button onClick={handleCancel} disabled={isPending}>
-                    Отменить
-                </button>
-                {errorText}
-            </>
-        );
-    }
+          <Button
+            size="xs"
+            variant="light"
+            color="red"
+            onClick={handleCancel}
+            disabled={isBusy && pendingAction !== 'cancel'}
+            loading={pendingAction === 'cancel'}
+          >
+            Отменить
+          </Button>
+        </Group>
+
+        {isTooEarly && !isExpired && (
+          <Text size="xs" c="dimmed">
+            Можно начать с {formatDateTime(booking.startDate)}
+          </Text>
+        )}
+      </Stack>
+    );
+  }
 
   if (booking.status === 'ACTIVE') {
     return (
-      <>
-        <button onClick={handleFinish} disabled={isPending}>
-          {isPending ? 'Завершаем…' : 'Завершить'}
-        </button>
-        {errorText}
-      </>
+      <Button size="xs" onClick={handleFinish} loading={pendingAction === 'finish'}>
+        Завершить
+      </Button>
     );
   }
 
   return null;
-}
+};

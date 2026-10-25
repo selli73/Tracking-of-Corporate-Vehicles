@@ -1,7 +1,9 @@
-import { useState, type ChangeEvent } from "react";
-import type { TariffOption, Vehicle } from "../types";
-import { vehiclesStore } from "../store";
-import { getErrorMessage } from "@/shared/api/getErrorMessage";
+import { useState } from 'react';
+import { Loader, Select, Stack, Text } from '@mantine/core';
+import type { TariffOption, Vehicle } from '../types';
+import { vehiclesStore } from '../store';
+import { getErrorMessage } from '@/shared/api/getErrorMessage';
+import { notifyError, notifySuccess } from '@/shared/ui/notify';
 
 interface VehicleTariffSelectProps {
   vehicle: Vehicle;
@@ -9,37 +11,47 @@ interface VehicleTariffSelectProps {
 }
 
 export const VehicleTariffSelect = ({ vehicle, tariffs }: VehicleTariffSelectProps) => {
-    
-    const [isSaving, setIsSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-    const options = tariffs.filter((t) => t.isActive || t.id === vehicle.tariffId)
+  const options = tariffs
+    .filter((t) => t.isActive || t.id === vehicle.tariffId)
+    .map((t) => ({
+      value: t.id,
+      label: t.isActive ? t.name : `${t.name} (неактивен)`,
+    }));
 
-    const handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
-        const value = event.target.value;
-        setError(null);
-        setIsSaving(true);
+  const handleChange = async (value: string | null) => {
+    if (value === vehicle.tariffId) return;
 
-        try {
-            await vehiclesStore.linkTariffToVehicle(vehicle.id, value === '' ? null : value);
-        } catch (error) {
-            setError(getErrorMessage(error, 'Не удалось сменить тариф'));
-        } finally {
-            setIsSaving(false);
-        }
+    setIsSaving(true);
+    try {
+      await vehiclesStore.linkTariffToVehicle(vehicle.id, value);
+      const tariffName = tariffs.find((t) => t.id === value)?.name;
+      notifySuccess(
+        tariffName
+          ? `${vehicle.licensePlate}: тариф «${tariffName}»`
+          : `${vehicle.licensePlate}: тариф отвязан`,
+      );
+    } catch (err) {
+      notifyError(getErrorMessage(err, 'Не удалось сменить тариф'));
+    } finally {
+      setIsSaving(false);
     }
-    
-    return (
-        <>
-            <select value={vehicle.tariffId ?? ''} onChange={handleChange} disabled={isSaving}>
-                <option value=''>Без тарифа</option>
-                {options.map((t) => (
-                    <option key={t.id} value={t.id}>
-                        {t.name}{t.isActive ? '' : ' (неактивен)'}
-                    </option>
-                ))}
-            </select>
-            {error && <span role="alert" style={{ color: 'crimson' }}> {error}</span>}
-        </>
-    )
-}
+  };
+
+  return (
+    <Stack gap={4}>
+      <Select
+        size="xs"
+        w={190}
+        placeholder="Без тарифа"
+        data={options}
+        value={vehicle.tariffId}
+        onChange={handleChange}
+        clearable
+        disabled={isSaving}
+        rightSection={isSaving ? <Loader size={14} /> : undefined}
+      />
+    </Stack>
+  );
+};

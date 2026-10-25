@@ -1,10 +1,12 @@
-import { ACCESS, authStore } from "@/features/auth";
-import { CreateBookingForm } from "@/features/bookings";
-import { usersStore } from "@/features/users";
-import { vehiclesStore } from "@/features/vehicles";
-import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { CreateBookingForm } from '@/features/bookings';
+import { usersStore } from '@/features/users';
+import { vehiclesStore } from '@/features/vehicles';
+import { notifySuccess } from '@/shared/ui/notify';
+import { PageHeader } from '@/shared/ui/PageHeader';
+import { Paper } from '@mantine/core';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 export const CreateBookingPage = observer(function CreateBookingPage() {
   const navigate = useNavigate();
@@ -19,12 +21,18 @@ export const CreateBookingPage = observer(function CreateBookingPage() {
 
   return (
     <>
-      <h1>Новая бронь</h1>
-      <CreateBookingForm
-        vehicles={availableVehicles}
-        drivers={drivers}
-        onSuccess={() => navigate('/bookings')}
-      />
+      <PageHeader title="Новая бронь" />
+      <Paper withBorder radius="md" p="lg" maw={720}>
+        <CreateBookingForm
+          vehicles={availableVehicles}
+          drivers={drivers}
+          onSuccess={() => {
+            notifySuccess('Бронь создана');
+            navigate('/bookings');
+          }}
+          onCancel={() => navigate('/bookings')}
+        />
+      </Paper>
     </>
   );
 });

@@ -1,3 +1,5 @@
+import type { MantineColor } from "@mantine/core";
+
 export type BookingStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELED' | 'DEBT' | 'EXPIRED';
 
 export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
@@ -7,6 +9,15 @@ export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
     CANCELED: 'Отменена',
     DEBT: 'Поездка не оплачена',
     EXPIRED: 'Не состоялась'
+};
+
+export const BOOKING_STATUS_COLOR: Record<BookingStatus, MantineColor> = {
+  PENDING: 'blue',
+  ACTIVE: 'green',
+  COMPLETED: 'gray',
+  CANCELED: 'gray',
+  DEBT: 'red',
+  EXPIRED: 'orange',
 };
 
 export interface Booking {

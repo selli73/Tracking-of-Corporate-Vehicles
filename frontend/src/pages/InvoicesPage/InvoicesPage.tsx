@@ -4,6 +4,7 @@ import { invoicesStore } from "@/features/invoices/store";
 import { usersStore } from "@/features/users";
 import { vehiclesStore } from "@/features/vehicles";
 import { LoadState } from "@/shared/ui/LoadState";
+import { PageHeader } from "@/shared/ui/PageHeader";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
@@ -28,7 +29,7 @@ export const InvoicesPage = observer(() => {
 
     return (
         <div>
-            <h1>Счета</h1>
+            <PageHeader title="Счета" />
             <LoadState
                 status={invoicesStore.status}
                 error={invoicesStore.error}

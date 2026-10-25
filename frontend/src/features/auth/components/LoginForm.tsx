@@ -1,72 +1,57 @@
-import { isApiError } from "@/shared/api/ApiError";
-import { useState, type FormEvent } from "react"
-import { authStore } from "../store";
+import { useState, type FormEvent } from 'react';
+import { Alert, Button, PasswordInput, Stack, TextInput } from '@mantine/core';
+import { authStore } from '../store';
+import { getRegisterErrorMessage } from '../errors';
 
-const getErrorMessage = (error: unknown) => {
-    if (!isApiError(error)) {
-        return 'Что-то пошло не так. Попробуйте ещё раз';
+export function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      await authStore.login({ email: email.trim(), password });
+    } catch (e) {
+      setError(getRegisterErrorMessage(e));
+    } finally {
+      setIsSubmitting(false);
     }
+  }
 
-    switch (error.code) {
-        case 'UNAUTHORIZED': 
-            return 'Неверный email или пароль';
-        case 'VALIDATION_ERROR':
-        case 'FORBIDDEN':
-        case 'NOT_FOUND':
-        default:
-            return error.message
-    }
-}
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack gap="md">
+        <TextInput
+          label="Email"
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.currentTarget.value)}
+        />
+        <PasswordInput
+          label="Пароль"
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.currentTarget.value)}
+        />
 
-export const LoginForm = () => {
-    
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setError(null);
-        setIsSubmitting(true);
+        {error && (
+          <Alert color="red" variant="light">
+            {error}
+          </Alert>
+        )}
 
-        try {
-            await authStore.login({ email, password });
-        } catch(error: unknown) {
-            setError(getErrorMessage(error));
-            setIsSubmitting(false)
-        }
-    }
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="email">Email</label>
-                <input 
-                    id='email' 
-                    type='email' 
-                    autoComplete='email' 
-                    required value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                />
-            </div>
-
-            <div>
-                <label htmlFor="password">Пароль</label>
-                <input 
-                    id='password' 
-                    type='password' 
-                    autoComplete='current-password' 
-                    required value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                />
-            </div>
-
-            { error && <p role='alert' style={{ color: 'crimson' }}>{error}</p> }
-
-            <button type='submit' disabled={isSubmitting}>
-                { isSubmitting? 'Входим...' : 'Войти' }
-            </button>
-        </form>
-    )
+        <Button type="submit" fullWidth loading={isSubmitting}>
+          Войти
+        </Button>
+      </Stack>
+    </form>
+  );
 }

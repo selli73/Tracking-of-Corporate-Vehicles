@@ -1,120 +1,175 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { CreateBookingDto, DriverInfo, VehicleInfo } from "../types";
-import { toDateTimeLocal } from "@/shared/lib/datetime";
-import { bookingStore } from "../store";
-import { getBookingErrorMessage } from "../errors";
-
+import { useState, type FormEvent } from 'react';
+import { Alert, Button, Group, Select, SimpleGrid, Stack, Text } from '@mantine/core';
+import { DateTimePicker } from '@mantine/dates';
+import dayjs from 'dayjs';
+import type { DriverInfo, VehicleInfo } from '../types';
+import { bookingStore } from '../store';
+import { getBookingErrorMessage } from '../errors';
+import { formatDuration } from '@/shared/lib/format';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface FormValues {
-  vehicleId: string;
-  driverId: string;
-  start: string;
-  end: string;
+  vehicleId: string | null;
+  driverId: string | null;
+  start: Date | null;
+  end: Date | null;
 }
 
-const EMPTY: FormValues = { vehicleId: '', driverId: '', start: '', end: '' };
+const EMPTY: FormValues = { vehicleId: null, driverId: null, start: null, end: null };
+
+type FieldErrors = Partial<Record<keyof FormValues, string>>;
+
+function toDate(value: string | Date | null): Date | null {
+  return value ? dayjs(value).toDate() : null;
+}
 
 interface CreateBookingFormProps {
   vehicles: VehicleInfo[];
   drivers: DriverInfo[];
   onSuccess: () => void;
+  onCancel?: () => void;
 }
 
-export const CreateBookingForm = ({ vehicles, drivers, onSuccess }: CreateBookingFormProps) => {
+export const CreateBookingForm = ({
+  vehicles,
+  drivers,
+  onSuccess,
+  onCancel,
+}: CreateBookingFormProps) => {
+  const [values, setValues] = useState<FormValues>(EMPTY);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 48em)');
 
-    const [values, setValues] = useState<FormValues>(EMPTY);
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const now = new Date();
 
-    const minStart = toDateTimeLocal(new Date());
+  function setField<K extends keyof FormValues>(field: K, value: FormValues[K]) {
+    setValues((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => ({ ...prev, [field]: undefined }));
+  }
 
-    function update(field: keyof FormValues) {
-        return (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-            setValues((prev) => ({ ...prev, [field]: event.target.value }));
+  function validate(): FieldErrors {
+    const errors: FieldErrors = {};
+    if (!values.vehicleId) errors.vehicleId = 'Выберите машину';
+    if (!values.driverId) errors.driverId = 'Выберите водителя';
+    if (!values.start) errors.start = 'Укажите начало';
+    if (!values.end) errors.end = 'Укажите окончание';
+    if (values.start && values.end && values.end <= values.start) {
+      errors.end = 'Окончание должно быть позже начала';
+    }
+    return errors;
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
     }
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        setError(null);
-
-        const start = new Date(values.start);
-        const end = new Date(values.end);
-
-        if (end <= start) {
-            setError('Окончание брони должно быть позже начала');
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            await bookingStore.create({
-                vehicleId: values.vehicleId,
-                driverId: values.driverId,
-                startDate: start.toISOString(),
-                endDate: end.toISOString(),
-            });
-            onSuccess();
-        } catch (err) {
-            setError(getBookingErrorMessage(err));
-            setIsSubmitting(false);
-        }
+    setIsSubmitting(true);
+    try {
+      await bookingStore.create({
+        vehicleId: values.vehicleId!,
+        driverId: values.driverId!,
+        startDate: values.start!.toISOString(),
+        endDate: values.end!.toISOString(),
+      });
+      onSuccess();
+    } catch (err) {
+      setError(getBookingErrorMessage(err));
+      setIsSubmitting(false);
     }
+  }
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label htmlFor="booking-vehicle">Машина</label>
-                <select id="booking-vehicle" required value={values.vehicleId} onChange={update('vehicleId')}>
-                <option value="" disabled>Выберите машину</option>
-                {vehicles.map((v) => (
-                    <option key={v.id} value={v.id}>
-                    {v.licensePlate} · {v.brand} {v.model}
-                    </option>
-                ))}
-                </select>
-            </div>
+  const durationMinutes =
+    values.start && values.end && values.end > values.start
+      ? Math.round((values.end.getTime() - values.start.getTime()) / 60000)
+      : null;
 
-            <div>
-                <label htmlFor="booking-driver">Водитель</label>
-                <select id="booking-driver" required value={values.driverId} onChange={update('driverId')}>
-                <option value="" disabled>Выберите водителя</option>
-                {drivers.map((d) => (
-                    <option key={d.id} value={d.id}>
-                    {d.surname} {d.name}
-                    </option>
-                ))}
-                </select>
-            </div>
+  return (
+    <form onSubmit={handleSubmit} noValidate>
+      <Stack gap="md">
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <Select
+            label="Машина"
+            placeholder="Выберите машину"
+            withAsterisk
+            searchable
+            nothingFoundMessage="Ничего не найдено"
+            data={vehicles.map((v) => ({
+              value: v.id,
+              label: `${v.licensePlate} · ${v.brand} ${v.model}`,
+            }))}
+            value={values.vehicleId}
+            onChange={(value) => setField('vehicleId', value)}
+            error={fieldErrors.vehicleId}
+          />
+          <Select
+            label="Водитель"
+            placeholder="Выберите водителя"
+            withAsterisk
+            searchable
+            nothingFoundMessage="Ничего не найдено"
+            data={drivers.map((d) => ({ value: d.id, label: `${d.surname} ${d.name}` }))}
+            value={values.driverId}
+            onChange={(value) => setField('driverId', value)}
+            error={fieldErrors.driverId}
+          />
+        </SimpleGrid>
 
-            <div>
-                <label htmlFor="booking-start">Начало</label>
-                <input
-                id="booking-start"
-                type="datetime-local"
-                required
-                min={minStart}
-                value={values.start}
-                onChange={update('start')}
-                />
-            </div>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <DateTimePicker
+            label="Начало"
+            placeholder="Выберите дату и время"
+            withAsterisk
+            valueFormat="DD.MM.YYYY HH:mm"
+            minDate={now}
+            value={values.start}
+            onChange={(value) => setField('start', toDate(value))}
+            error={fieldErrors.start}
+            dropdownType={isMobile ? 'modal' : 'popover'}
+          />
+          <DateTimePicker
+            label="Окончание"
+            placeholder="Выберите дату и время"
+            withAsterisk
+            valueFormat="DD.MM.YYYY HH:mm"
+            minDate={values.start ?? now}
+            value={values.end}
+            onChange={(value) => setField('end', toDate(value))}
+            error={fieldErrors.end}
+            dropdownType={isMobile ? 'modal' : 'popover'}
+          />
+        </SimpleGrid>
 
-            <div>
-                <label htmlFor="booking-end">Окончание</label>
-                <input
-                id="booking-end"
-                type="datetime-local"
-                required
-                min={values.start || minStart}
-                value={values.end}
-                onChange={update('end')}
-                />
-            </div>
+        {durationMinutes !== null && (
+          <Text size="sm" c="dimmed">
+            Длительность: {formatDuration(durationMinutes)}
+          </Text>
+        )}
 
-            {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
+        {error && (
+          <Alert color="red" variant="light">
+            {error}
+          </Alert>
+        )}
 
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Бронируем…' : 'Забронировать'}
-            </button>
-        </form>
-    );
-}
+        <Group justify="flex-end">
+          {onCancel && (
+            <Button variant="default" onClick={onCancel} disabled={isSubmitting}>
+              Отмена
+            </Button>
+          )}
+          <Button type="submit" loading={isSubmitting}>
+            Забронировать
+          </Button>
+        </Group>
+      </Stack>
+    </form>
+  );
+};

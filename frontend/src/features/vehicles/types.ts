@@ -1,4 +1,12 @@
+import type { MantineColor } from "@mantine/core";
+
 export type VehicleStatus = 'ACTIVE' | 'MAINTENANCE' | 'DECOMMISSIONED';
+
+export const VEHICLE_STATUS_COLOR: Record<VehicleStatus, MantineColor> = {
+  ACTIVE: 'green',
+  MAINTENANCE: 'orange',
+  DECOMMISSIONED: 'gray',
+};
 
 export interface Vehicle {
     id: string;

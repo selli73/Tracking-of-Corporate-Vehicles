@@ -1,23 +1,30 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { RegisterCompanyDto } from "../types";
-import { getErrorMessage } from "@/shared/api/getErrorMessage";
-import { authStore } from "../store";
-import { getRegisterErrorMessage } from "../errors";
-
+import { useState, type FormEvent } from 'react';
+import {
+  Alert,
+  Button,
+  Divider,
+  PasswordInput,
+  SimpleGrid,
+  Stack,
+  TextInput,
+} from '@mantine/core';
+import { authStore } from '../store';
+import { getRegisterErrorMessage } from '../errors';
+import type { RegisterCompanyDto } from '../types';
 
 interface FormValues {
-    officialName: string;
-    shortName: string;
-    tin: string;
-    registeredAddress: string;
-    actualAddress: string;
-    phone: string;
-    companyEmail: string;
-    name: string;
-    surname: string;
-    email: string;
-    password: string;
-    passwordRepeat: string;
+  officialName: string;
+  shortName: string;
+  tin: string;
+  registeredAddress: string;
+  actualAddress: string;
+  phone: string;
+  companyEmail: string;
+  surname: string;
+  name: string;
+  email: string;
+  password: string;
+  passwordRepeat: string;
 }
 
 const EMPTY: FormValues = {
@@ -57,184 +64,146 @@ function toDto(values: FormValues): RegisterCompanyDto {
   };
 }
 
-export const RegisterCompanyForm = () => {
-    const [values, setValues] = useState<FormValues>(EMPTY);
-    const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    function update(field: keyof FormValues) {
-        return (event: ChangeEvent<HTMLInputElement>) =>
-            setValues((prev) => ({ ...prev, [field]: event.target.value }));        
+export function RegisterCompanyForm() {
+  const [values, setValues] = useState<FormValues>(EMPTY);
+  const [error, setError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null); // НОВОЕ
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function setField(field: keyof FormValues, value: string) {
+    setValues((prev) => ({ ...prev, [field]: value }));
+    if (field === 'password' || field === 'passwordRepeat') setPasswordError(null);
+  }
+
+  function bind(field: keyof FormValues) {
+    return {
+      value: values[field],
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setField(field, e.currentTarget.value),
+    };
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+
+    if (values.password !== values.passwordRepeat) {
+      setPasswordError('Пароли не совпадают');
+      return;
     }
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-        setError(null);
-
-        if (values.password !== values.passwordRepeat) {
-            setError('Пароли не совпадают');
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
-            await authStore.registerCompany(toDto(values));
-        } catch (error) {
-            setError(getRegisterErrorMessage(error));
-        } finally {
-            setIsSubmitting(false);
-        }
+    setIsSubmitting(true);
+    try {
+      await authStore.registerCompany(toDto(values));
+    } catch (e) {
+      setError(getRegisterErrorMessage(e));
+    } finally {
+      setIsSubmitting(false);
     }
+  }
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <fieldset>
-                <legend>Компания</legend>
+  return (
+    <form onSubmit={handleSubmit}>
+      <Stack gap="md">
+        <Divider label="Компания" labelPosition="left" />
 
-                <div>
-                    <label htmlFor="officialName">Полное название</label>
-                    <input
-                        id="officialName"
-                        required
-                        maxLength={150}
-                        placeholder="ООО «Ромашка»"
-                        value={values.officialName}
-                        onChange={update('officialName')}
-                    />
-                </div>
+        <TextInput
+          label="Полное название"
+          placeholder="ООО «Ромашка»"
+          required
+          maxLength={150}
+          {...bind('officialName')}
+        />
 
-                <div>
-                    <label htmlFor="shortName">Короткое название</label>
-                    <input
-                        id="shortName"
-                        required
-                        maxLength={30}
-                        placeholder="Ромашка"
-                        value={values.shortName}
-                        onChange={update('shortName')}
-                    />
-                </div>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <TextInput
+            label="Короткое название"
+            placeholder="Ромашка"
+            required
+            maxLength={30}
+            {...bind('shortName')}
+          />
+          <TextInput
+            label="ИНН"
+            description="10 цифр для организации, 12 для ИП"
+            required
+            inputMode="numeric"
+            pattern="\d{10}|\d{12}"
+            maxLength={12}
+            {...bind('tin')}
+          />
+        </SimpleGrid>
 
-                <div>
-                    <label htmlFor="tin">ИНН</label>
-                    <input
-                        id="tin"
-                        required
-                        inputMode="numeric"
-                        pattern="\d{10}|\d{12}"
-                        maxLength={12}
-                        title="10 цифр для организации или 12 цифр для ИП"
-                        value={values.tin}
-                        onChange={update('tin')}
-                    />
-                </div>
+        <TextInput label="Юридический адрес" required maxLength={150} {...bind('registeredAddress')} />
+        <TextInput
+          label="Фактический адрес"
+          description="Если отличается от юридического"
+          maxLength={150}
+          {...bind('actualAddress')}
+        />
 
-                <div>
-                    <label htmlFor="registeredAddress">Юридический адрес</label>
-                    <input
-                        id="registeredAddress"
-                        required
-                        maxLength={150}
-                        value={values.registeredAddress}
-                        onChange={update('registeredAddress')}
-                    />
-                </div>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <TextInput
+            label="Телефон"
+            type="tel"
+            placeholder="+79991234567"
+            required
+            pattern="\+?\d{10,14}"
+            maxLength={15}
+            {...bind('phone')}
+          />
+          <TextInput
+            label="Email компании"
+            type="email"
+            required
+            maxLength={120}
+            {...bind('companyEmail')}
+          />
+        </SimpleGrid>
 
-                <div>
-                    <label htmlFor="actualAddress">Фактический адрес (если отличается)</label>
-                    <input
-                        id="actualAddress"
-                        maxLength={150}
-                        value={values.actualAddress}
-                        onChange={update('actualAddress')}
-                    />
-                </div>
+        <Divider label="Владелец" labelPosition="left" mt="sm" />
 
-                <div>
-                    <label htmlFor="phone">Телефон</label>
-                    <input
-                        id="phone"
-                        type="tel"
-                        required
-                        pattern="\+?\d{10,14}"
-                        maxLength={15}
-                        placeholder="+79991234567"
-                        title="От 10 до 14 цифр, можно с плюсом в начале"
-                        value={values.phone}
-                        onChange={update('phone')}
-                    />
-                </div>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <TextInput label="Фамилия" required maxLength={35} {...bind('surname')} />
+          <TextInput label="Имя" required maxLength={25} {...bind('name')} />
+        </SimpleGrid>
 
-                <div>
-                    <label htmlFor="companyEmail">Email компании</label>
-                    <input
-                        id="companyEmail"
-                        type="email"
-                        required
-                        maxLength={120}
-                        value={values.companyEmail}
-                        onChange={update('companyEmail')}
-                    />
-                </div>
-            </fieldset>
+        <TextInput
+          label="Email для входа"
+          type="email"
+          required
+          autoComplete="email"
+          {...bind('email')}
+        />
 
-            <fieldset>
-                <legend>Владелец</legend>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
+          <PasswordInput
+            label="Пароль"
+            description="От 8 до 72 символов"
+            required
+            minLength={8}
+            maxLength={72}
+            autoComplete="new-password"
+            {...bind('password')}
+          />
+          <PasswordInput
+            label="Повторите пароль"
+            required
+            autoComplete="new-password"
+            error={passwordError}
+            {...bind('passwordRepeat')}
+          />
+        </SimpleGrid>
 
-                <div>
-                    <label htmlFor="surname">Фамилия</label>
-                    <input id="surname" required maxLength={35} value={values.surname} onChange={update('surname')} />
-                </div>
+        {error && (
+          <Alert color="red" variant="light">
+            {error}
+          </Alert>
+        )}
 
-                <div>
-                    <label htmlFor="name">Имя</label>
-                    <input id="name" required maxLength={25} value={values.name} onChange={update('name')} />
-                </div>
-
-                <div>
-                    <label htmlFor="email">Email для входа</label>
-                    <input
-                        id="email"
-                        type="email"
-                        required
-                        autoComplete="email"
-                        value={values.email}
-                        onChange={update('email')}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="password">Пароль</label>
-                    <input
-                        id="password"
-                        type="password"
-                        required
-                        minLength={8}
-                        maxLength={72}
-                        autoComplete="new-password"
-                        value={values.password}
-                        onChange={update('password')}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="passwordRepeat">Повторите пароль</label>
-                    <input
-                        id="passwordRepeat"
-                        type="password"
-                        required
-                        autoComplete="new-password"
-                        value={values.passwordRepeat}
-                        onChange={update('passwordRepeat')}
-                    />
-                </div>
-            </fieldset>
-
-            {error && <p role="alert" style={{ color: 'crimson' }}>{error}</p>}
-
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Регистрируем…' : 'Зарегистрировать'}
-            </button>
-        </form>
-    );
+        <Button type="submit" fullWidth loading={isSubmitting} mt="sm">
+          Зарегистрировать
+        </Button>
+      </Stack>
+    </form>
+  );
 }

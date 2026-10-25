@@ -1,7 +1,9 @@
-export const PageLoader = () => {
-    return (
-        <div style={{ display: 'grid', placeItems: 'center', minHeight: '100vh' }}>
-            Загрузка...
-        </div>
-    )
+import { Center, Loader } from '@mantine/core';
+
+export function PageLoader() {
+  return (
+    <Center h="100vh">
+      <Loader size="lg" />
+    </Center>
+  );
 }
