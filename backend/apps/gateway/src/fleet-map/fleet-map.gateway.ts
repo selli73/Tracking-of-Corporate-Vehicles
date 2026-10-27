@@ -7,10 +7,7 @@ import type { PayloadJwt } from '@app/contracts';
 
 
 @WebSocketGateway({
-  namespace: '/map',
-  cors: {
-    origin: '*'
-  }
+  namespace: '/map'
 })
 export class FleetMapGateway implements OnGatewayConnection, OnGatewayDisconnect {
 

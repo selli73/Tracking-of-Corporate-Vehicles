@@ -18,7 +18,7 @@ export function AuthCard({ title, subtitle, width = 420, footer, children }: Aut
           <ThemeIcon size="lg" radius="md">
             <IconCar size={20} />
           </ThemeIcon>
-          <Title order={3}>VehiclePark</Title>
+          <Title order={3}>CarBooking24</Title>
         </Group>
 
         <Paper withBorder shadow="sm" radius="md" p="xl" w="100%" maw={width}>

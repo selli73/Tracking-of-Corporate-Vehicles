@@ -37,19 +37,14 @@ async function bootstrap() {
     .setDescription('API documentation for the tracking')
     .setVersion('1.0')
     .addBearerAuth()
+    .addServer('/api')
     .addGlobalResponse({ status: 500, description: 'Internal server error' })
     .addGlobalResponse({ status: 400, description: 'Bad request' })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
-
-  const frontOrigin = [app.get(ConfigService).getOrThrow('FRONTEND_IP_NG')]
-
-  app.enableCors({
-    credentials: true,
-    origin: frontOrigin
-  });
+  SwaggerModule.setup('docs', app, document);
+  
   await app.listen(process.env.port ?? 3000);
 }
 bootstrap();

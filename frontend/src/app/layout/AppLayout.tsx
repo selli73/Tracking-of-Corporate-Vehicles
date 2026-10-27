@@ -57,7 +57,7 @@ export const AppLayout = observer(function AppLayout() {
         <Group h="100%" px="md" justify="space-between">
           <Group gap="sm">
             <Burger opened={isMenuOpen} onClick={toggleMenu} hiddenFrom="sm" size="sm" />
-            <Title order={4}>VehiclePark</Title>
+            <Title order={4}>CarBooking24</Title>
           </Group>
 
           <Group gap="md">
