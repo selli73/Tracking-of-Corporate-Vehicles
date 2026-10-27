@@ -4,7 +4,7 @@ import { BookingService } from './booking.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { BOOKING_EVENTS_CLIENT, EXCHANGES, FLEET_SERVICE } from '@app/contracts';
+import { BOOKING_EVENTS_CLIENT, EXCHANGES, FLEET_SERVICE, QUEUES } from '@app/contracts';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -38,7 +38,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           transport: Transport.RMQ,
           options: {
             urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
-            queue: 'fleet_queue',
+            queue: QUEUES.FLEET,
             queueOptions: {
               durable: true,
             },

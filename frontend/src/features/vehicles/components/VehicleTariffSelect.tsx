@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader, Select, Stack, Text } from '@mantine/core';
+import { Loader, Select, Stack } from '@mantine/core';
 import type { TariffOption, Vehicle } from '../types';
 import { vehiclesStore } from '../store';
 import { getErrorMessage } from '@/shared/api/getErrorMessage';

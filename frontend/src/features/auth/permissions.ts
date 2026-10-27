@@ -1,8 +1,5 @@
 import type { Role } from "@/features/auth";
 
-
-type Section = 'vehicles' | 'vehiclesManage' | 'bookings' | 'users' | 'tariffs';
-
 const ALL: Role[] = ['OWNER', 'COMPANY_ADMIN', 'MANAGER', 'DRIVER'];
 
 export const ACCESS = {

@@ -6,9 +6,11 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { QUEUES } from '@app/contracts';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CorrelationIdInterceptor } from './correlation.interceptor';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
+  const url = app.get(ConfigService).getOrThrow<string>('RABBITMQ_URL');
   app.useGlobalInterceptors(new CorrelationIdInterceptor());
   app.useGlobalPipes(
     new ValidationPipe({
@@ -21,7 +23,7 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://rabbitmq:secret@localhost:5672'],
+      urls: [url],
       queue: QUEUES.ALERTS,
       queueOptions: {
         durable: true
@@ -41,6 +43,13 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
+
+  const frontOrigin = [app.get(ConfigService).getOrThrow('FRONTEND_IP_NG')]
+
+  app.enableCors({
+    credentials: true,
+    origin: frontOrigin
+  });
   await app.listen(process.env.port ?? 3000);
 }
 bootstrap();

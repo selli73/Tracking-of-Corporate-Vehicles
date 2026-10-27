@@ -11,7 +11,7 @@ import { vehiclesStore } from '@/features/vehicles';
 import type { LoadStatus } from '@/shared/lib/loadStatus';
 import { BaseMap } from '@/shared/ui/map/BaseMap';
 import { FitBounds } from '@/shared/ui/map/FitBounds';
-import { Alert, Box, Button, Flex, Group, LoadingOverlay, Paper, Stack } from '@mantine/core';
+import { Alert, Button, Flex, Group, LoadingOverlay, Paper, Stack } from '@mantine/core';
 import type { LatLngTuple } from 'leaflet';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';

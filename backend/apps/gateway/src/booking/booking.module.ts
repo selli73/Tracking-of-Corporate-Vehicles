@@ -3,7 +3,7 @@ import { BookingService } from './booking.service.js';
 import { BookingController } from './booking.controller.js';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { BOOKING_SERVICE } from '@app/contracts';
+import { BOOKING_SERVICE, QUEUES } from '@app/contracts';
 
 @Module({
   imports: [
@@ -14,8 +14,8 @@ import { BOOKING_SERVICE } from '@app/contracts';
             useFactory: (configService: ConfigService) => ({
               transport: Transport.RMQ,
               options: {
-                urls: ['amqp://rabbitmq:secret@localhost:5672'],
-                queue: 'booking_queue',
+                urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+                queue: QUEUES.BOOKING,
                 queueOptions: {
                   durable: true,
                 },

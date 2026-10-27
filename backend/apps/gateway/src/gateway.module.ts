@@ -13,18 +13,19 @@ import { AlertsController } from './alerts/alerts.controller.js';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { FleetMapModule } from './fleet-map/fleet-map.module.js';
 import { BillingModule } from './billing/billing.module.js';
+import { FLEET_SERVICE, QUEUES } from '@app/contracts';
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'FLEET_SERVICE',
+        name: FLEET_SERVICE,
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://rabbitmq:secret@localhost:5672'],
-            queue: 'fleet_queue',
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+            queue: QUEUES.FLEET,
             queueOptions: {
               durable: true,
             },

@@ -1,4 +1,82 @@
+x-backend: &backend
+    restart: unless-stopped  
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 services:
+  gateway:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: gateway
+    env_file:
+      - ./backend/.env
+  fleet:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: fleet
+    env_file:
+      - ./backend/.env
+  
+  booking:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: booking
+    env_file:
+      - ./backend/.env
+  
+  telemetry:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: telemetry
+    env_file:
+      - ./backend/.env
+
+  billing:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: billing
+    env_file:
+      - ./backend/.env
+
+  notification:
+    <<: *backend
+    build:
+      context: ./backend
+      args:
+        APP: notification
+    env_file:
+      - ./backend/.env
+  simulator:
+    restart: unless-stopped
+    build:
+      context: ./simulator    
+    depends_on:
+      [gateway]
+    env_file:
+      - ./simulator/.env
+    volumes:
+      - ./simulator/credentials.json:/usr/src/app/credentials.json:ro
+
+  frontend:
+    image: frontend_tracking
+    build:
+      context: ./frontend
+    depends_on:
+      [gateway]
+    ports:
+      - "80:80"
   postgres:
     image: postgis/postgis:16-3.4
     restart: always
@@ -7,7 +85,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -16,21 +94,16 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-  redis:
-    image: redis:alpine
-    container_name: tracking_redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
   rabbitmq:
     image: rabbitmq:3-management
     environment:
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=secret
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "5672:5672"
       - "15672:15672"

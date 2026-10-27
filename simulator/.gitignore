@@ -2,4 +2,3 @@
 bun.lock
 node_modules
 credentials.json
-points.ts

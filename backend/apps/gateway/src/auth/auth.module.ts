@@ -5,7 +5,7 @@ import { AuthController } from './auth.controller.js';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { FLEET_SERVICE } from '@app/contracts';
+import { FLEET_SERVICE, QUEUES } from '@app/contracts';
 
 @Module({
   imports: [
@@ -28,8 +28,8 @@ import { FLEET_SERVICE } from '@app/contracts';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.RMQ,
           options: {
-            urls: ['amqp://rabbitmq:secret@localhost:5672'],
-            queue: 'fleet_queue',
+            urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
+            queue: QUEUES.FLEET,
             queueOptions: {
               durable: true,
             },
